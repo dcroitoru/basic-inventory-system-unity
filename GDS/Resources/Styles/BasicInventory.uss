@@ -1,0 +1,119 @@
+@import "Base.uss";
+
+.root-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  align-items: center;
+  justify-content: center;
+  /* flex-direction: row; */
+}
+
+.debug-label {
+  display: none;
+}
+
+.inventory-window {
+  display: flex;
+  justify-content: space-between;
+  padding: 48px 64px;
+  margin: 50px;
+  background-image: resource("Icons/inventory-bg");
+  -unity-slice-scale: 0.1px;
+  /* width: 900px; */
+  /* height: 650px; */
+  /* align-items: center; */
+}
+
+.window {
+  background-image: resource("Icons/inventory-bg");
+  -unity-slice-scale: 0.1px;
+  padding: 48px 64px;
+  margin: 50px;
+  margin-bottom: 20px;
+  max-width: 640px;
+  align-items: flex-start;
+}
+
+.slot {
+  width: 64px;
+  height: 64px;
+  background-image: resource("Icons/slot");
+  margin: 0 1px 1px 0;
+  padding: 4px;
+}
+
+.slot:hover {
+  border-color: #b8abf5;
+}
+
+.quant {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  background-color: rgba(31, 31, 31, 0.75);
+  color: white;
+  padding: 0px 4px;
+}
+
+.inventory .slot-container {
+  flex-wrap: wrap;
+  max-width: 1000px;
+  width: 650px;
+  background-color: initial;
+}
+
+.slot-helmet.empty {
+  background-image: resource("Icons/helmet-slot");
+  background-color: #303031;
+}
+
+.slot-weapon.empty {
+  background-image: resource("Icons/weapon-slot");
+  background-color: #303031;
+}
+
+.slot-body-armor.empty {
+  background-image: resource("Icons/chest-slot");
+  background-color: #303031;
+}
+
+.slot-boots.empty {
+  background-image: resource("Icons/boots-slot");
+  background-color: #303031;
+}
+
+.background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.valid-drop-target:hover .overlay {
+  background-color: rgba(200, 255, 200, 0.25);
+}
+.invalid-drop-target:hover .overlay {
+  background-color: rgba(247, 57, 57, 0.37);
+}
+
+.chest {
+  align-items: flex-start;
+}
+
+.empty-message {
+  color: #888;
+}
+
+.description {
+  font-size: 24px;
+  color: #666;
+  margin-bottom: 40px;
+}
+
+.message {
+  position: absolute;
+  bottom: 100px;
+  left: 100px;
+}

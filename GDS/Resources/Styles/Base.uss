@@ -1,0 +1,121 @@
+Label {
+  color: white;
+  font-size: 12px;
+  margin: 0;
+  padding: 1px;
+}
+
+Button {
+  padding: 4px 8px;
+  margin: 0;
+  background-color: #353131;
+  border-color: #353131;
+  color: #bbb;
+  border-width: 1px;
+  font-size: 14px;
+  border-radius: 4px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+Button:hover {
+  border-color: #aaa;
+}
+
+Button:active {
+  translate: 0px 1px;
+}
+
+.row {
+  flex-direction: row;
+}
+
+.column {
+  flex-direction: column;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.cover {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.mb-10 {
+  margin-bottom: 10px;
+}
+
+.m-50 {
+  margin: 50px;
+}
+
+.mr-100 {
+  margin-right: 100px;
+}
+
+.w-half {
+  width: 50%;
+}
+
+.display-none {
+  display: none;
+}
+
+/* ################ */
+
+.slot-container {
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.slot {
+  width: 50px;
+  height: 50px;
+  border-width: 1px;
+  border-color: #666;
+  overflow: hidden;
+}
+
+.debug-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 10px;
+  background-color: #353131;
+}
+
+.ghost-item {
+  width: 64px;
+  height: 64px;
+  position: absolute;
+  translate: -50% -50%;
+  background-color: rgba(128, 128, 128, 0.2);
+}
+
+.item-image {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+}
+
+.item {
+  position: absolute;
+  padding: 4px;
+  background-color: rgba(128, 128, 128, 0.2);
+}
+
+.item:hover {
+  background-color: rgba(128, 255, 128, 0.15);
+}
+
+.title {
+  color: #aaa;
+  font-size: 16px;
+  margin: 4px 0;
+}
