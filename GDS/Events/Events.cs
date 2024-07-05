@@ -10,7 +10,9 @@ namespace GDS {
     public record ToggleInventoryEvent() : CustomEvent;
     public record CloseInventoryEvent() : CustomEvent;
     public record ToggleWindowEvent(string id) : CustomEvent;
-    public record SlotHoverEvent(SlotView SlotView) : CustomEvent;
+    public record SlotMouseOverEvent(SlotView SlotView) : CustomEvent;
+    public record SlotMouseOutEvent(SlotView SlotView) : CustomEvent;
+    public record Invalidate() : CustomEvent;
 
 
     public record ResetEvent() : CustomEvent;

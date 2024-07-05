@@ -4,25 +4,31 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GDS {
-    abstract public class SmartComponent<T> : VisualElement {
-        public SmartComponent(Observable<T> data) {
-            _data = data.Value;
+    abstract public class SmartComponent<T> : VisualElement where T : IObservable {
+        public SmartComponent(T data) {
+            _data = data;
 
             RegisterCallback<AttachToPanelEvent>((e) => {
                 // Util.Log("attached to panel, should call render".pink(), this);
-                data.OnNext += Render;
+                OnInit();
+                data.OnNext += _render;
                 Render(_data);
             });
             RegisterCallback<DetachFromPanelEvent>((e) => {
                 // Util.Log("detached from panel".pink(), this);
-                data.OnNext -= Render;
+                OnDestroy();
+                data.OnNext -= _render;
             });
         }
 
         protected T _data;
         public T Data { get => _data; }
+        void _render(object o) {
+            Render((T)o);
+        }
         virtual public void Render(T data) { }
-
+        virtual public void OnInit() { }
+        virtual public void OnDestroy() { }
 
     }
 }

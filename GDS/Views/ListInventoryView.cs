@@ -5,8 +5,8 @@ using System.Linq;
 namespace GDS {
 
     public class ListInventoryView<T> : SmartComponent<T> where T : Inventory {
-        public ListInventoryView(Observable<T> bag) : base(bag) {
-            slots = bag.Value.Slots.Select(x => createSlot(x, bag.Value)).ToArray();
+        public ListInventoryView(T bag) : base(bag) {
+            slots = bag.Slots.Select(x => createSlot(x, bag)).ToArray();
             this.Div("inventory", Dom.Div("slot-container", slots));
         }
 

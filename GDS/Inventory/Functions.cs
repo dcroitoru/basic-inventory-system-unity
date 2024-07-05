@@ -24,7 +24,6 @@ namespace GDS {
 
         public static bool IsStackable(this Item item) => DB.Stackable.Contains(item.Type);
 
-
         public static bool CanPlace(this SlotType slotType, Item item) => slotType switch {
             SlotType.Default => true,
             SlotType.RemoveOnly => false,
@@ -47,7 +46,6 @@ namespace GDS {
         /**************************************************************
         * Add items
         **************************************************************/
-
 
         // adds item to bag
         // returns true if added; false otherwise
@@ -132,6 +130,7 @@ namespace GDS {
         }
 
         static (bool, Item) PlaceItem(this Inventory bag, Item item, Slot slot) {
+            // Log("should place item in regular inventory");
             if (!CanPlace(slot.Type, item)) return (false, NoItem);
 
             var index = bag.Slots.IndexOf(slot);
@@ -172,30 +171,34 @@ namespace GDS {
         * Set state
         */
 
-        public static void SetState(this Equipment bag, List<SlotItemDTO> dto) {
+        public static Equipment SetState(this Equipment bag, List<SlotItemDTO> dto) {
             var keys = bag.Slots.Keys.ToHashSet();
             var slots = bag.Slots;
             foreach (var key in keys) slots[key] = slots[key] with { Item = NoItem };
             dto.ForEach(slot => slots[slot.pos] = slots[slot.pos] with { Item = CreateItem(slot.item) });
-
+            // bag.Next();
+            return bag;
         }
 
-        public static void SetState(this Inventory bag, List<ListItemDTO> dto) {
+        public static Inventory SetState(this Inventory bag, List<ListItemDTO> dto) {
             var slots = bag.Slots;
             for (var i = 0; i < slots.Count(); i++) slots[i] = slots[i] with { Item = NoItem };
             dto.ForEach(slot => slots[slot.pos] = slots[slot.pos] with { Item = CreateItem(slot.item) });
+            return bag;
         }
 
-        public static void SetState(this Chest bag, List<ItemDTO> dto) {
+        public static Chest SetState(this Chest bag, List<ItemDTO> dto) {
             var slots = bag.Slots;
             slots.Clear();
             dto.ForEach(slot => slots.Add(CreateSlot(SlotType.RemoveOnly, CreateItem(slot))));
+            return bag;
         }
 
-        public static void SetState(this Chest bag, List<Item> items) {
+        public static Chest SetState(this Chest bag, List<Item> items) {
             var newChest = CreateChest(bag.Id, items.ToArray());
             bag.Slots.Clear();
             newChest.Slots.ForEach(slot => bag.Slots.Add(slot));
+            return bag;
         }
     }
 }

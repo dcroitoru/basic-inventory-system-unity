@@ -6,7 +6,7 @@ namespace GDS {
 
     public static class Factory {
         public static NoBag NoBag = new NoBag("");
-        public static Item NoItem = new Item(new(-1), ItemType.NoItem, 0, new Size(0, 0), ItemClass.NoClass);
+        public static Item NoItem = new Item(new(-1), ItemType.NoItem, 0, new Size(0, 0), ItemClass.NoClass, ItemRarity.NoRarity);
 
         static int lastId = 0;
         public static ItemId CreateItemId() => new ItemId(lastId++);
@@ -14,17 +14,17 @@ namespace GDS {
 
 
 
-        public static Item CreateItem(ItemId id, ItemType type, int quant) {
+        public static Item CreateItem(ItemId id, ItemType type, int quant, ItemRarity rarity) {
             var cls = DB.Classes.GetValueOrDefault(type);
             var size = DB.Sizes.GetValueOrDefault(cls) ?? new(1, 1);
-            return new Item(id, type, quant, size, cls);
+            return new Item(id, type, quant, size, cls, rarity);
         }
-        public static Item CreateItem(ItemType type, int quant) => CreateItem(CreateItemId(), type, quant);
+        public static Item CreateItem(ItemType type, int quant, ItemRarity rarity) => CreateItem(CreateItemId(), type, quant, rarity);
+        public static Item CreateItem(ItemType type, int quant) => CreateItem(CreateItemId(), type, quant, ItemRarity.NoRarity);
         public static Item CreateItem(ItemType type) => CreateItem(type, 1);
-        public static Item CreateItem(ItemDTO dto) {
-            var (id, type, quant) = dto;
-            return CreateItem(new ItemId(id), type, quant);
-        }
+        public static Item CreateItem(ItemDTO dto) => CreateItem(CreateItemId(), dto.type, dto.quant, dto.rarity);
+
+
 
         public static Slot CreateSlot(SlotType slotType, Item item) => new Slot(CreateSlotId(), slotType, item);
         public static Slot CreateSlot(SlotType slotType) => CreateSlot(slotType, NoItem);
@@ -34,6 +34,7 @@ namespace GDS {
         public static List<Slot> CreateSlots(int size) => CreateSlots(size, SlotType.Default);
 
         public static Inventory CreateInventory(int size = 10, string id = "inventory") => new Inventory(id, size, CreateSlots(size));
+        public static Inventory CreateInventory(int size, SlotType slotType, string id = "inventory") => new Inventory(id, size, CreateSlots(size, slotType));
 
 
         public static Hotbar CreateHotbar(int Size, string id = "hotbar") => new Hotbar(id, Size, CreateSlots(Size, SlotType.Consumable));

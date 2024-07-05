@@ -2,17 +2,15 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GDS {
+namespace GDS.Demos.Basic {
 
     public class BasicInventory : MonoBehaviour {
         [SerializeField] UIDocument document;
-        EventBus bus = Global.BasicBus;
+        EventBus bus = Store.Bus;
         private void Awake() {
             var root = document.rootVisualElement;
-            root.Div(new BasicRootLayer());
+            root.Div(new RootLayer());
         }
-
-
 
         private void Update() {
             if (Input.GetKeyDown(KeyCode.Alpha1)) bus.Publish(new HotbarUseEvent(1));

@@ -10,10 +10,9 @@ namespace GDS {
         public T Data {
             get => _data;
             set {
-                if (_data == null || !_data.Equals(value)) {
-                    _data = value;
-                    Render(_data);
-                }
+                if (_data != null && _data.Equals(value)) return;
+                _data = value;
+                Render(_data);
             }
         }
 

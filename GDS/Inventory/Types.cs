@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace GDS {
@@ -7,10 +8,13 @@ namespace GDS {
     public record Size(int W, int H);
     public record Pos(int X, int Y);
 
-    public record Item(ItemId Id, ItemType Type, int Quant, Size Size, ItemClass Class);
+    public record Item(ItemId Id, ItemType Type, int Quant, Size Size, ItemClass Class, ItemRarity Rarity);
     public record Slot(SlotId Id, SlotType Type, Item Item);
 
-    public abstract record Bag(string Id);
+    public abstract record Bag(string Id) : IObservable {
+        public event Action<object> OnNext = (_) => { };
+        public void Next() => OnNext.Invoke(this);
+    }
     public record NoBag(string id) : Bag(id);
     public record Equipment(string Id, Dictionary<SlotType, Slot> Slots) : Bag(Id);
     public record Inventory(string Id, int Size, List<Slot> Slots) : Bag(Id);
@@ -18,7 +22,7 @@ namespace GDS {
     public record Chest(string Id, List<Slot> Slots) : Inventory(Id, 0, Slots);
     public record Vendor(string Id, List<Slot> Slots) : Inventory(Id, 0, Slots);
 
-    public record ItemDTO(int id, ItemType type, int quant = 1);
+    public record ItemDTO(ItemType type, int quant = 1, ItemRarity rarity = ItemRarity.NoRarity);
     public record SlotItemDTO(ItemDTO item, SlotType pos);
     public record ListItemDTO(ItemDTO item, int pos);
     public record ChestDTO(string id, List<ItemDTO> items);

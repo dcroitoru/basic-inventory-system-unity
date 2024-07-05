@@ -13,7 +13,9 @@ namespace GDS {
         public static VisualElement Div() => new VisualElement();
         public static VisualElement Div(params VisualElement[] children) => new VisualElement().Div(children);
         public static Button Button(string className, string text, Action clickEvent) => new Button(clickEvent) { text = text }.WithClass(className) as Button;
+        public static Button Button(string text, Action clickEvent) => new(clickEvent) { text = text };
         public static Label Label(string className, string text) => new Label(text).WithClass(className) as Label;
+        public static Label Label(string text) => new(text);
         public static Label Title(string text) => new Label(text).WithClass("title") as Label;
     }
 
@@ -27,6 +29,17 @@ namespace GDS {
             }
 
             element.AddToClassList(className);
+            return element;
+        }
+
+        public static VisualElement WithoutClass(this VisualElement element, string className) {
+            if (className.Contains(" ")) {
+                var classNames = className.Split(' ');
+                for (var i = 0; i < classNames.Length; i++) element.RemoveFromClassList(classNames[i]);
+                return element;
+            }
+
+            element.RemoveFromClassList(className);
             return element;
         }
 
@@ -47,8 +60,31 @@ namespace GDS {
 
         public static VisualElement Hide(this VisualElement element) => element.WithClass("display-none");
 
-        public static VisualElement Show(this VisualElement element) {
-            element.RemoveFromClassList("display-none");
+        public static VisualElement Show(this VisualElement element) => element.WithoutClass("display-none");
+
+        public static VisualElement SetVisible(this VisualElement element, bool visible) => visible ? element.WithoutClass("display-none") : element.WithClass("display-none");
+
+
+
+        public static VisualElement WithoutPointerEvents(this VisualElement element, bool childrenOnly = false) {
+            if (childrenOnly == false) element.pickingMode = PickingMode.Ignore;
+            foreach (var child in element.Children()) child.WithoutPointerEvents();
+            return element;
+        }
+
+        public static VisualElement SetSize(this VisualElement element, Size size, int scale = 1) {
+            element.style.width = size.W * scale;
+            element.style.height = size.H * scale;
+            return element;
+        }
+
+        public static VisualElement Translate(this VisualElement element, Pos pos, int scale = 1) {
+            element.style.translate = new Translate(pos.X * scale, pos.Y * scale);
+            return element;
+        }
+
+        public static VisualElement Translate(this VisualElement element, Size pos, int scale = 1) {
+            element.style.translate = new Translate(pos.W * scale, pos.H * scale);
             return element;
         }
 

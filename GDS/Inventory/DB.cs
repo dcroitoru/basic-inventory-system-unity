@@ -18,7 +18,7 @@ namespace GDS {
         Ring2,
         Amulet,
         RemoveOnly,
-        Consumable
+        Consumable,
     }
 
     public enum ItemType {
@@ -51,7 +51,18 @@ namespace GDS {
         Ring,
         Weapon1H,
         Weapon2H,
-        Consumable
+        Consumable,
+    }
+
+    public enum ItemRarity {
+        NoRarity,
+        Common,
+        Magic,
+        Rare,
+        Unique,
+        Legendary,
+        Set,
+        Epic
     }
 
     public static class DB {
@@ -74,6 +85,7 @@ namespace GDS {
             { ItemType.Wood, Resources.Load<Sprite>("Icons/wood") },
             { ItemType.Gem, Resources.Load<Sprite>("Icons/gem") },
             { ItemType.Amulet, Resources.Load<Sprite>("Icons/necklace") },
+
         };
 
         public static Dictionary<ItemType, ItemClass> Classes = new() {
@@ -89,7 +101,9 @@ namespace GDS {
             {ItemType.HealthPotion, ItemClass.Consumable},
             {ItemType.ManaPotion, ItemClass.Consumable},
             {ItemType.Apple, ItemClass.Consumable},
-            {ItemType.Mushroom, ItemClass.Consumable}
+            {ItemType.Mushroom, ItemClass.Consumable},
+
+
 
         };
 

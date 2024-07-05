@@ -10,4 +10,9 @@ namespace GDS {
             OnNext.Invoke(Value);
         }
     }
+
+    public interface IObservable {
+        public event Action<object> OnNext;
+        public void Next();
+    }
 }

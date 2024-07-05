@@ -54,6 +54,10 @@ Button:active {
   margin: 50px;
 }
 
+.mr-20 {
+  margin-right: 20px;
+}
+
 .mr-100 {
   margin-right: 100px;
 }
@@ -64,6 +68,15 @@ Button:active {
 
 .display-none {
   display: none;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.text-center {
+  text-align: center;
+  -unity-text-align: middle-center;
 }
 
 /* ################ */
@@ -91,11 +104,7 @@ Button:active {
 }
 
 .ghost-item {
-  width: 64px;
-  height: 64px;
   position: absolute;
-  translate: -50% -50%;
-  background-color: rgba(128, 128, 128, 0.2);
 }
 
 .item-image {
@@ -104,7 +113,13 @@ Button:active {
   background-size: contain;
 }
 
-.item {
+.title {
+  color: #aaa;
+  font-size: 16px;
+  margin: 4px 0;
+}
+
+/* .item {
   position: absolute;
   padding: 4px;
   background-color: rgba(128, 128, 128, 0.2);
@@ -114,8 +129,21 @@ Button:active {
   background-color: rgba(128, 255, 128, 0.15);
 }
 
-.title {
-  color: #aaa;
-  font-size: 16px;
-  margin: 4px 0;
+
+
+.red-dot {
+  position: absolute;
+  background-color: red;
+  width: 40px;
+  height: 40px;
+  translate: -20px -20px;
+}*/
+
+.quant {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  background-color: rgba(31, 31, 31, 0.75);
+  color: white;
+  padding: 0px 4px;
 }
