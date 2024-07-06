@@ -6,7 +6,7 @@ namespace GDS.Demos.Basic {
 
 
         static List<SlotItemDTO> equipment = new() {
-            new SlotItemDTO(new(ItemType.WarriorHelmet), SlotType.Helmet),
+            new SlotItemDTO(new(ItemType.WarriorHelmet, 1, ItemRarity.Rare), SlotType.Helmet),
             new SlotItemDTO(new(ItemType.Axe), SlotType.Weapon1)
         };
 
@@ -40,8 +40,8 @@ namespace GDS.Demos.Basic {
                 new ItemDTO(ItemType.Apple, 10),
                 new ItemDTO(ItemType.ManaPotion, 10),
                 new ItemDTO(ItemType.HealthPotion, 10),
-                new ItemDTO(ItemType.GoldRing),
-                new ItemDTO(ItemType.WarriorHelmet),
+                new ItemDTO(ItemType.GoldRing, 1, ItemRarity.Magic),
+                new ItemDTO(ItemType.WarriorHelmet, 1, ItemRarity.Unique),
             })
         };
 
