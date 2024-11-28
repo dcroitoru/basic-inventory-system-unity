@@ -1,0 +1,208 @@
+/* @import "./CustomTheme.uss"; */
+:root {
+  --cell-size: 64px;
+}
+
+VisualElement {
+  flex-shrink: 0;
+}
+
+Label {
+  color: white;
+  font-size: 12px;
+  margin: 0;
+  padding: 1px;
+}
+
+Button {
+  padding: 4px 8px;
+  margin: 0;
+  background-color: #353131;
+  border-color: #353131;
+  color: #bbb;
+  border-width: 1px;
+  font-size: 14px;
+  border-radius: 4px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+Button:hover {
+  border-color: #aaa;
+}
+
+Button:active {
+  translate: 0px 1px;
+}
+
+.row {
+  flex-direction: row;
+}
+
+.column {
+  flex-direction: column;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.cover {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.mb-10 {
+  margin-bottom: 10px;
+}
+
+.mb-20 {
+  margin-bottom: 10px;
+}
+
+.m-50 {
+  margin: 50px;
+}
+
+.mt-50 {
+  margin-top: 50px;
+}
+
+.mr-20 {
+  margin-right: 20px;
+}
+
+.mr-50 {
+  margin-right: 50px;
+}
+
+.mr-100 {
+  margin-right: 100px;
+}
+
+.p-20 {
+  padding: 20px;
+}
+
+.p-50 {
+  padding: 50px;
+}
+
+.w-half {
+  width: 50%;
+}
+
+.display-none {
+  display: none;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.text-center {
+  /* text-align: center; */
+  -unity-text-align: middle-center;
+}
+
+/* ################ */
+
+.slot-container {
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.slot {
+  width: 50px;
+  height: 50px;
+  border-width: 1px;
+  border-color: #666;
+  overflow: hidden;
+}
+
+.debug-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 10px;
+  background-color: #353131;
+  opacity: 0.5;
+}
+
+.ghost-item {
+  position: absolute;
+}
+
+.item {
+  min-width: var(--cell-size);
+  min-height: var(--cell-size);
+}
+
+.item-image {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+}
+
+.title {
+  color: #aaa;
+  font-size: 16px;
+  margin: 4px 0;
+}
+
+.h4 {
+  color: #ccc;
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+/* .message {
+  position: absolute;
+  bottom: 100px;
+  left: 100px;
+} */
+
+/* .item {
+  position: absolute;
+  padding: 4px;
+  background-color: rgba(128, 128, 128, 0.2);
+}
+
+.item:hover {
+  background-color: rgba(128, 255, 128, 0.15);
+}
+
+
+
+.red-dot {
+  position: absolute;
+  background-color: red;
+  width: 40px;
+  height: 40px;
+  translate: -20px -20px;
+}*/
+
+.item-quant {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  background-color: rgba(31, 31, 31, 0.75);
+  color: white;
+  padding: 0px 4px;
+}

@@ -1,0 +1,39 @@
+.tooltip {
+  position: absolute;
+  border-width: 2px;
+  padding: 16px;
+  min-width: 160px;
+  /* min-height: 600px; */
+  background-color: #180e0a;
+  border-color: #af5f1c;
+  visibility: hidden;
+}
+
+.tooltip__item-name {
+  -unity-text-align: middle-center;
+  font-size: 20px;
+}
+
+.unique {
+  /* color: #af5f1c; */
+  background-color: #180e0a;
+  border-color: #af5f1c;
+}
+
+.rare {
+  /* color: #fefe76; */
+  background-color: #442e19;
+  border-color: #ac8222;
+}
+
+.magic {
+  /* color: #8787fe; */
+  background-color: #182224;
+  border-color: #424a67;
+}
+
+.common {
+  /* color: #c8c8c8; */
+  background-color: #2e2e2e;
+  border-color: #908380;
+}

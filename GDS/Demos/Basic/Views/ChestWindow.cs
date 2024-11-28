@@ -1,20 +1,21 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEngine.UIElements;
-using static GDS.Factory;
-using static GDS.Dom;
-using static GDS.Util;
-namespace GDS.Demos.Basic {
+using GDS.Core.Views;
+using GDS.Core;
+using GDS.Core.Events;
+using GDS.Basic.Views;
+using static GDS.Core.Dom;
+namespace GDS.Basic {
 
-    public class ChestWindow : SmartComponent<Chest> {
+    public class ChestWindow : SmartComponent<ListBag> {
 
-        public ChestWindow(Chest chest) : base(chest) {
-            this.chest = chest;
-            var store = Store.Instance;
-            store.sideWindowId.OnNext += SetDisplay;
-            SetDisplay(store.sideWindowId.Value);
+        public ChestWindow(ListBag chest, string Title = "Chest (Remove Only)") : base(chest) {
+
+            Action onCollectClick = () => {
+                var items = chest.Slots.Select(slot => slot.Item).ToArray();
+                bus.Publish(new CollectAllEvent(chest, items));
+            };
 
             slotContainer = Div("slot-container mb-10");
             content = Div("chest column",
@@ -24,23 +25,18 @@ namespace GDS.Demos.Basic {
             empty = Label("empty-message", "[Empty]");
 
             this.Div("window",
-                Label("title", "Chest (Remove Only)"),
+                Dom.Title(Title),
                 content,
                 empty
-            );
+            ).WithWindowBehavior(chest.Id, Store.Instance.sideWindowId, Store.Bus);
         }
 
         EventBus bus = Store.Bus;
-        Chest chest;
         VisualElement slotContainer;
         VisualElement content;
         Label empty;
-        SlotView createSlot(Slot slot, Bag bag) => new() { Data = slot, Bag = bag };
-        void SetDisplay(string otherId) => style.display = otherId == chest.Id ? DisplayStyle.Flex : DisplayStyle.None;
 
-        override public void Render(Chest chest) {
-
-            Log("should render chest".blue(), chest.ToString().green());
+        override public void Render(ListBag chest) {
             if (chest.IsEmpty()) {
                 content.Hide();
                 empty.Show();
@@ -50,13 +46,9 @@ namespace GDS.Demos.Basic {
             empty.Hide();
             content.Show();
             slotContainer.Clear();
-            slotContainer.Div(chest.Slots.Where(Fn.IsNotEmpty).Select(x => createSlot(x, chest)).ToArray());
+            slotContainer.Div(chest.Slots.Where(InventoryExtensions.IsNotEmpty).Select(x => new BasicSlotView(x, chest)).ToArray());
         }
 
-        void onCollectClick() {
-            Log("should collect all".blue());
-            var items = chest.Slots.Select(slot => slot.Item).ToArray();
-            bus.Publish(new CollectAllEvent(chest, items));
-        }
+
     }
 }

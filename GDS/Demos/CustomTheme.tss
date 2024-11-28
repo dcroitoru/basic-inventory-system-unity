@@ -1,0 +1,28 @@
+.unity-label {
+  color: #d2d2d2;
+  font-size: 12px;
+  margin: 0;
+  padding-left: 1px;
+  padding-top: 1px;
+}
+
+Button {
+  padding: 4px 8px;
+  margin: 0;
+  background-color: #353131;
+  border-color: #353131;
+  color: #bbb;
+  border-width: 1px;
+  font-size: 14px;
+  border-radius: 4px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+Button:hover {
+  border-color: #aaa;
+}
+
+Button:active {
+  translate: 0px 1px;
+}

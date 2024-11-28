@@ -1,41 +1,31 @@
+using System;
 using System.Linq;
+using GDS.Core;
+using GDS.Core.Events;
+using GDS.Core.Views;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static GDS.Factory;
-using static GDS.Dom;
+using static GDS.Core.Dom;
 
-namespace GDS.Demos.Basic {
+namespace GDS.Basic {
 
-    public class VendorWindow : VisualElement {
+    public class VendorWindow : SmartComponent<Vendor> {
 
-        public VendorWindow(Vendor vendor) {
-            this.vendor = vendor;
-            var store = Store.Instance;
-            store.sideWindowId.OnNext += SetDisplay;
-            SetDisplay(store.sideWindowId.Value);
-            Render(vendor);
+        public VendorWindow(Vendor bag) : base(bag) {
 
-            this.Div("window",
-                Label("title", "Vendor"),
-                slotContainer.WithClass("slot-container mb-10"),
+            Action BuyRandom = () => {
+                var index = UnityEngine.Random.Range(0, bag.NonEmptySlots().ToList().Count);
+                var item = bag.Slots[index].Item;
+                Store.Bus.Publish(new BuyItemEvent(item));
+            };
+
+            var slots = bag.Slots.Where(InventoryExtensions.IsNotEmpty).Select(x => new SlotView(x, bag));
+
+            this.Add("window",
+                Title("Vendor (Infinite resources)"),
+                Div("slot-container mb-10", slots.ToArray()),
                 Button("", "Buy Random", BuyRandom)
-            );
-        }
+            ).WithWindowBehavior(bag.Id, Store.Instance.sideWindowId, Store.Bus);
 
-        Vendor vendor;
-        VisualElement slotContainer = new();
-        SlotView createSlot(Slot slot, Bag bag) => new() { Data = slot, Bag = bag };
-        void SetDisplay(string otherId) => style.display = otherId == vendor.Id ? DisplayStyle.Flex : DisplayStyle.None;
-
-        void Render(Vendor vendor) {
-            var slots = vendor.Slots.Where(Fn.IsNotEmpty).Select(x => createSlot(x, vendor));
-            slotContainer.Div(slots.ToArray());
-        }
-
-        void BuyRandom() {
-            var item = CreateRandomItem();
-            Store.Bus.Publish(new AddItemEvent(item));
-            Global.GlobalBus.Publish(new MessageEvent($"Bought <color=#5490e4>[{item.Type}]"));
         }
 
 

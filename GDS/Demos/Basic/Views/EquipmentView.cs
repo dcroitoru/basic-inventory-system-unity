@@ -1,35 +1,41 @@
-using UnityEngine;
-using UnityEngine.UIElements;
-using System.Linq;
-using System.Collections.Generic;
-using static GDS.SlotType;
-using static GDS.Dom;
-namespace GDS.Demos.Basic {
+using GDS.Basic.Views;
+using GDS.Core;
+using GDS.Core.Views;
+using GDS.Sample;
+namespace GDS.Basic {
+    // public class BasicSlotView : SlotView<BasicItemView> { public BasicSlotView(Slot slot, Bag bag) : base(slot, bag) { } }
+    public class BasicSetSlotView : SetSlotView<BasicItemView> { public BasicSetSlotView(SetSlot slot, Bag bag) : base(slot, bag) { } }
 
-    public class EquipmentView : SmartComponent<Equipment> {
+    public class EquipmentView : SmartComponent<SetBag> {
 
-        public EquipmentView(Equipment equipment) : base(equipment) {
-            this.equipment = equipment;
+        public EquipmentView(SetBag equipment) : base(equipment) {
 
-            var keys = new List<SlotType> { Helmet, BodyArmor, Gloves, Boots, Weapon1 };
-            slots = keys.ToDictionary(key => key, key => createSlot(key));
+            helmet = new BasicSetSlotView(equipment.GetSlot(SlotType.Helmet), equipment);
+            weapon = new BasicSetSlotView(equipment.GetSlot(SlotType.Weapon), equipment);
+            gloves = new BasicSetSlotView(equipment.GetSlot(SlotType.Gloves), equipment);
+            boots = new BasicSetSlotView(equipment.GetSlot(SlotType.Boots), equipment);
+            bodyArmor = new BasicSetSlotView(equipment.GetSlot(SlotType.BodyArmor), equipment);
 
             this.Div("equipment slot-container",
-                slots[Helmet].WithClass("equipment-slot helmet"),
-                slots[BodyArmor].WithClass("equipment-slot body-armor"),
-                slots[Gloves].WithClass("equipment-slot gloves"),
-                slots[Boots].WithClass("equipment-slot boots"),
-                slots[Weapon1].WithClass("equipment-slot weapon"));
+                helmet.WithClass("equipment-slot helmet"),
+                bodyArmor.WithClass("equipment-slot body-armor"),
+                gloves.WithClass("equipment-slot gloves"),
+                boots.WithClass("equipment-slot boots"),
+                weapon.WithClass("equipment-slot weapon"));
         }
 
-        Equipment equipment;
-        Dictionary<SlotType, SlotView> slots;
+        BasicSetSlotView helmet;
+        BasicSetSlotView bodyArmor;
+        BasicSetSlotView gloves;
+        BasicSetSlotView boots;
+        BasicSetSlotView weapon;
 
-        SlotView createSlot(SlotType slotType) => new SlotView() { Bag = equipment, Data = equipment.Slots[slotType] };
-        void SetSlotViewData(SlotView slotView, Slot data) => slotView.Data = data;
-
-        override public void Render(Equipment data) {
-            foreach (var (key, value) in Data.Slots) SetSlotViewData(slots[key], value);
+        override public void Render(SetBag equipment) {
+            helmet.Data = equipment.GetSlot(SlotType.Helmet);
+            weapon.Data = equipment.GetSlot(SlotType.Weapon);
+            gloves.Data = equipment.GetSlot(SlotType.Gloves);
+            boots.Data = equipment.GetSlot(SlotType.Boots);
+            bodyArmor.Data = equipment.GetSlot(SlotType.BodyArmor);
         }
     }
 }

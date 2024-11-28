@@ -4,7 +4,7 @@
     xmlns:ui="UnityEngine.UIElements"
     xsi:noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd"
 >
-<!-- <Style src="project://database/Assets/GDS/Resources/Base.uss" /> -->
-<!-- <ui:VisualElement style="width: 100%; height: 20px; background-color: purple;" /> -->
+<!-- This is intentionally blank! -->
+<!-- Do not put anything here! -->
     
 </ui:UXML>
