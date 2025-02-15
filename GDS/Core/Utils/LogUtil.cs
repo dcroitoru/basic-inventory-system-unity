@@ -29,11 +29,12 @@ namespace GDS.Core {
         public static string AsString<T>(this List<T> list) => string.Join("\n", list);
         public static string AsString<T, V>(this Dictionary<T, V> list) => string.Join("\n", list);
 
-        public static string ColorizeMatrixValues(this string input, string pattern = @"[0-9]") => Regex.Replace(input, pattern, match => match.Value switch {
+        public static string ColorizeMatrixValues(this string input, string pattern = @"[0-9,|,_,.,-]|\bNoItem\b") => Regex.Replace(input, pattern, match => match.Value switch {
             "1" => match.Value.Green(),
             "2" => match.Value.Yellow(),
             "3" => match.Value.Red(),
-            _ => match.Value.Gray()
+            "4" => match.Value.Red(),
+            _ => match.Value.DarkGray()
         });
 
     }

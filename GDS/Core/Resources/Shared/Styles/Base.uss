@@ -3,12 +3,14 @@
   --cell-size: 64px;
 }
 
-VisualElement {
+/* Disabling for now as it messes up scroll-view */
+/* We'll have to explicitly set flex-shrink-0 on components */
+/* VisualElement {
   flex-shrink: 0;
-}
+} */
 
 Label {
-  color: white;
+  color: #d5d5d5;
   font-size: 12px;
   margin: 0;
   padding: 1px;
@@ -170,6 +172,11 @@ Button:active {
   color: #ccc;
   font-size: 14px;
   margin: 4px 0;
+  margin-top: 12px;
+}
+
+.debug-window {
+  padding: 10px 16px;
 }
 
 /* .message {

@@ -14,7 +14,7 @@ namespace GDS.Core.Views {
                 image.WithClass("item-image"),
                 quant.WithClass("item-quant"),
                 debug.WithClass("debug-label")
-            ).WithoutPointerEventsInChildren();
+            ).IgnorePickChildren();
         }
 
         VisualElement image = new();

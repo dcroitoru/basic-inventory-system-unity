@@ -13,6 +13,7 @@ namespace GDS.Core {
         public const string Blue = "#3881d4";
         public const string Pink = "#e665df";
         public const string Gray = "#999";
+        public const string DarkGray = "#555";
     }
 
     public static class ColorUtil {
@@ -26,5 +27,6 @@ namespace GDS.Core {
         public static string Brown(this string str) => ColorTag(Colors.Brown)(str);
         public static string Black(this string str) => ColorTag(Colors.Black)(str);
         public static string Gray(this string str) => ColorTag(Colors.Gray)(str);
+        public static string DarkGray(this string str) => ColorTag(Colors.DarkGray)(str);
     }
 }

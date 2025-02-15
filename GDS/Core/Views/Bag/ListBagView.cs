@@ -1,21 +1,22 @@
+using System;
 using System.Linq;
+using UnityEngine.UIElements;
 
 namespace GDS.Core.Views {
 
+    public delegate SlotView CreateSlotFn(Slot slot, Bag bag);
     /// <summary>
     /// A smart component that displays a list of slots
     /// </summary>
-    public class ListBagView<T> : SmartComponent<T> where T : ListBag {
-        public ListBagView(T bag) : base(bag) {
-            slots = bag.Slots.Select(slot => new SlotView(slot, bag)).ToArray();
-            this.Add("inventory", Dom.Div("slot-container", slots));
+    public class ListBagView<T> : VisualElement where T : BaseSlotView {
+        public ListBagView(ListBag bag) {
+            // createSlotFn ??= (Slot slot, Bag bag) => new SlotView(slot, bag);
+            Func<ListSlot, T> createSlotFn = (slot) => (T)Activator.CreateInstance(typeof(T), slot, bag);
+            var slotViews = bag.Slots.Select(slot => createSlotFn(slot)).ToArray();
+            this.Add("list-bag", Dom.Div("slot-container", slotViews));
+            this.Observe(bag.Data, (slots) => {
+                for (var i = 0; i < slots.Count; i++) slotViews[i].Data = slots[i];
+            });
         }
-
-        SlotView[] slots;
-
-        override public void Render(T bag) {
-            for (var i = 0; i < bag.Slots.Count; i++) slots[i].Data = bag.Slots[i];
-        }
-
     }
 }

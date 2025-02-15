@@ -1,0 +1,41 @@
+.tab-buttons {
+  flex-direction: row;
+  flex-shrink: 0;
+}
+
+.tab-carousel {
+  flex-direction: row;
+}
+
+.tab-title {
+  flex-shrink: 0;
+}
+
+.red-square {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+}
+
+.green-square {
+  width: 100px;
+  height: 100px;
+  background-color: green;
+}
+
+.blue-square {
+  width: 100px;
+  height: 100px;
+  background-color: blue;
+}
+
+.yellow-square {
+  width: 100px;
+  height: 100px;
+  background-color: yellow;
+}
+
+.active {
+  border-color: aquamarine;
+  border-width: 1px;
+}

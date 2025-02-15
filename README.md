@@ -1,4 +1,5 @@
-*v0.1*
+Check the online version [here](https://dcroitoru.github.io/gamedevsimplified/)
+
 ## Introduction
 
 The purpose of this package is to provide a versatile and extensible solution for creating inventories in Unity. Its design allows developers to quickly set up functional inventories while offering the flexibility to adapt to custom use cases. The framework supports a variety of inventory types, making it suitable for a wide range of games. 
@@ -12,7 +13,7 @@ The predefined inventory types are:
 Built on **UI Toolkit**, it offers advanced styling and layout capabilities while avoiding the overhead of GameObjects and Prefabs. Learn more in the [UI Toolkit documentation](https://docs.unity3d.com/Manual/UIElements.html). 
 It also comes bundled with an abstract yet powerful **item system** that minimizes setup while supporting diverse use cases.
 
-This framework is targeted at **programmers**. It currently lacks designer-friendly features such as custom editors or Scriptable Objects, so some coding is required to implement custom functionality.
+This framework is currently targeted at **programmers**. It lacks designer-friendly features such as custom editors or Scriptable Objects, so some coding is required to implement custom functionality. Support for Scriptable Objects may come in the next update.
 
 ## Getting started
 
@@ -20,7 +21,6 @@ To get started, check out the 2 demos included in the *Lite* version - "Minimal"
 
 The **Minimal** demo has the least amount of code needed to setup a working inventory. It is a great starting point to familiarize yourself with the fundamentals of the framework. It consists of one inventory, some items and the simplest behavior of moving items around.
 
-![[Pasted image 20241127185802.png]]
 
 The **Basic** demo is a *Minecraft*-inspired inventory featuring the following:
 - A `main inventory` window consisting of equipment, inventory and a consumables hot-bar
@@ -28,15 +28,14 @@ The **Basic** demo is a *Minecraft*-inspired inventory featuring the following:
 - A `treasure chest` window, which has some items that you can pick but cannot place anything back. You can also pick all at once.
 - A `crafting bench` window, which has slots for materials and an outcome slot. Placing materials in the correct order will populate the outcome slot. Picking the item from outcome slot will "craft" the item.
 - A `stash` window, which is an inventory you can store items in.
-- A way to drop items on the "ground", by dragging them over a designated area. This will place the item "on the ground". Items on the ground can be then picked up by opening yet another window.
+- A way to drop items on the "ground". 
 - A way to destroy items, by dragging them over a designated area. 
-
-![[Pasted image 20241127185839.png]]
+- All this is integrated in a minimalistic 3d scene.
 
 
 ## Installation
 
-You can install the package from Unity Package Manager or from [git](https://github.com/dcroitoru/basic-inventory-system-unity) (*only Lite version*).
+You can install the package from Unity Package Manager.
 There are no external dependencies.
 
 
@@ -80,14 +79,13 @@ The base `Slot` type is extended into specialized slot types:
 
 ### Inventory
 
-An **Inventory** manages a collection of **Slots**. Each inventory type comes with its own behavior and can enforce restrictions on accepted items. The base inventory type is  `Bag` , a short and descriptive name. A `Bag` can notify its subscribers of state changes through an **Observable** mechanism, making it easy to update views or other systems.
+An **Inventory** manages a collection of **Slots**. Each inventory type comes with its own behavior and can enforce restrictions on accepted items. The base inventory type is  `Bag` , a short and descriptive name. 
 
 ```cs
-// Inventory.cs
-public abstract record Bag(string Id) : INotifyChange {
-	public FilterFn Accepts = (_) => true;
-	public event Action<object> OnChange = (_) => { };
-	public void Notify() => OnChange(this);
+// Types.cs
+public abstract record Bag(string Id) {
+	public static NoBag NoBag = new();
+	public FilterFn Accepts = Filters.Everything;
 }
 ```
 
@@ -114,7 +112,7 @@ An event does not perform any actions itself, that falls under the responsibilit
 Inspired by web technologies like [**Redux**](https://redux.js.org/faq/general#when-should-i-use-redux), the **Store** serves as the central hub for managing system state. It subscribes to events on event channels and performs necessary state updates. All changes to the system state flow through the **Store**, ensuring consistency and predictability.
 
 ```cs
-// BasicStore.cs
+// Store.cs
 public Store() {
 	Bus.Subscribe<PickItemEvent>(e => OnPickItem(e as PickItemEvent));
 	// ...
@@ -133,19 +131,32 @@ This is your repository of item bases and all the types that fully describe and 
 For example an *Apple* is defined as a **stackable**, **consumable** **basic item**, while a *Dagger* is a **1-handed** **weapon**, with *Attack Damage* and *Attack Speed*
 
 ```cs
-// BasicDB.cs
-public record BasicItemBase(BaseId BaseId, string Name, string IconPath, bool Stackable, ItemClass Class);
+// Types.cs
+public record ItemBase(BaseId BaseId, string Name, string IconPath, bool Stackable, ItemClass Class);
 
 public record WeaponItemBase(BaseId BaseId, string Name, string IconPath, ItemClass Class, int Attack, float AttackSpeed)
+//...
+public static ItemBase Apple = new("Apple", "Apple", "Shared/Images/items/apple", true, ItemClass.Consumable);
 
-public static List<BasicItemBase> AllBases = new() {
-	new WeaponItemBase(Dagger, "Dagger", "Shared/Icons/sword-blue", ItemClass.Weapon1H, 80, 1.5f),
-	
-	new BasicItemBase(Apple, "Apple", "Shared/Icons/apple", true,  ItemClass.Consumable),
-	// ...
-}
+public static WeaponItemBase ShortSword = new("ShortSword", "Short Sword", "Shared/Images/items/sword-blue", ItemClass.Weapon1H, 80, 1.5f);
 ```
 
+### Behaviors
+
+The UI is decoupled from any interactivity logic. All logic is abstracted away in behaviors, like showing a tooltip on hovering an item, dragging an item to pick it up or showing a "ghost" version of the dragged item.
+```cs
+// Behaviors.cs
+public static VisualElement WithDragToPickBehavior(this VisualElement element, Observable<Item> draggedItem, EventBus bus) {/*...*/}
+
+public static VisualElement WithItemTooltipBehavior<T>(this VisualElement root) where T : Component<Item> {/*...*/}
+
+// RootLayer.cs
+this.Add("root-layer")
+	.WithDragToPickBehavior(Store.Instance.DraggedItem, Store.Bus)
+	.WithGhostItemBehavior<BasicItemView>(Store.Instance.DraggedItem)
+	.WithItemTooltipBehavior<Tooltip>();
+
+```
 
 ## Technical Details
 
@@ -200,14 +211,37 @@ Since UI Toolkit is heavily based on web technologies, the framework proposes we
 
 
 ## How it works
-`coming soon`
 
 
+From a birds eye view, the system consists of a `data store`, an `event bus` and `UI` 
+When the user interacts with the UI, let's say *picks an item from a slot*, an event is put on the event bus.
+```cs
+// Behaviors.cs
+CustomEvent evt = new PickItemEvent(t.Bag, t.Data.Item, t.Data, e.modifiers)                    
+
+bus.Publish(evt);
+```
+
+The `Store`, having subscribed to the event, sends its data to a handler function which will update the `bag`.
+```cs
+// Store.cs
+Bus.Subscribe<PickItemEvent>(e => OnPickItem(e as PickItemEvent));
+void OnPickItem(PickItemEvent e) {
+	//...
+	bag.Notify();	
+}
+```
+
+Then, any view that is observing the bag will update itself.
+```cs
+// ListBagView.cs
+this.Observe(bag.Data, (slots) => {/*...*/});
+```
 ## How to Use the Framework
 
 1. **Set up an inventory**: Start by modifying or cloning one of the provided demos. Cloning ensures you don’t lose your changes when updating the package.
 2. **Add new items**:
-    - Define a new item base in the `AllBases` dictionary.
+    - Define a new item base in the `Bases` static class (`Basic/Inventory/Types.cs`)
     - Use the `ItemFactory.Create` function to create the item.
     - Add the item to an inventory using `AddItem` or `SetItems` in the _Store_'s `Reset` method.
 3. **Reference examples**: Use the provided samples for guidance on extending functionality.
@@ -217,13 +251,11 @@ Since UI Toolkit is heavily based on web technologies, the framework proposes we
 
  Use the UI Toolkit Debugger (`Window > UI Toolkit > Debugger`) to inspect the visual elements tree and its styles and classes.
  
-![[Pasted image 20241127184237.png]]
 
 Since UI Toolkit uses a form of CSS, it also inherits all the downsides of the cascading aspect - always check for unintended style propagation affecting your UI.
 
 Use the included *Debug* editor windows to view the raw state of the system. These tools help identify whether issues originate from the data layer or the view layer.
 
-![[Pasted image 20241127184644.png]]
 
 
 ### Need Help?
@@ -233,11 +265,8 @@ Join our [**Discord server**](https://www.youtube.com/redirect?event=channel_hea
 
 ## Roadmap
 - **Persistence**: Save/load functionality using JSON and/or CSV.
-- **Designer Tools**: Investigating support for Scriptable Objects and custom editors.
+- **Designer Tools**: Support for Scriptable Objects and custom editors.
 - An **advanced version** (paid) is coming "soon". It will include
     - **Grid inventory** with varying item sizes.
     - **Puzzle inventory** with varying item shapes that can also be rotated.
-
-![[Pasted image 20241127190120.png]]
-
-![[Pasted image 20241127190304.png]]
+    - Demos for grid-based inventories inspired by some popular games like `Diablo`, `Backpack Battles`, `DayZ`

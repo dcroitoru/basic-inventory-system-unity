@@ -8,47 +8,42 @@ using GDS.Basic.Views;
 using static GDS.Core.Dom;
 namespace GDS.Basic {
 
-    public class ChestWindow : SmartComponent<ListBag> {
+    public class ChestWindow : VisualElement {
 
-        public ChestWindow(ListBag chest, string Title = "Chest (Remove Only)") : base(chest) {
+        public ChestWindow(ListBag chest, string titleText = "Chest (Remove Only)") {
 
             Action onCollectClick = () => {
                 var items = chest.Slots.Select(slot => slot.Item).ToArray();
-                bus.Publish(new CollectAllEvent(chest, items));
+                Store.Bus.Publish(new CollectAllEvent(chest, items));
             };
 
-            slotContainer = Div("slot-container mb-10");
-            content = Div("chest column",
+            var slotContainer = Div("slot-container");
+            var content = Div("chest column",
                 slotContainer,
                 Button("collect-button", "Collect all", onCollectClick)
             );
-            empty = Label("empty-message", "[Empty]");
+            var emptyLabel = Label("empty-message", "[Empty]");
 
-            this.Div("window",
-                Dom.Title(Title),
-                content,
-                empty
-            ).WithWindowBehavior(chest.Id, Store.Instance.sideWindowId, Store.Bus);
+            this.Add("window",
+                Comps.CloseButton(chest),
+                Title(titleText),
+                emptyLabel,
+                content
+            );
+
+            this.Observe(chest.Data, (_) => {
+                if (chest.IsEmpty()) {
+                    content.Hide();
+                    emptyLabel.Show();
+                    return;
+                }
+
+                emptyLabel.Hide();
+                content.Show();
+                slotContainer.Clear();
+                slotContainer.Div(chest.Slots.Where(InventoryExtensions.IsNotEmpty).Select(x => new BasicSlotView(x, chest)).ToArray());
+            });
+
         }
-
-        EventBus bus = Store.Bus;
-        VisualElement slotContainer;
-        VisualElement content;
-        Label empty;
-
-        override public void Render(ListBag chest) {
-            if (chest.IsEmpty()) {
-                content.Hide();
-                empty.Show();
-                return;
-            }
-
-            empty.Hide();
-            content.Show();
-            slotContainer.Clear();
-            slotContainer.Div(chest.Slots.Where(InventoryExtensions.IsNotEmpty).Select(x => new BasicSlotView(x, chest)).ToArray());
-        }
-
-
     }
 }

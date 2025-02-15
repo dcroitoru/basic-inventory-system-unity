@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 namespace GDS.Core {
@@ -14,10 +15,15 @@ namespace GDS.Core {
 
         public static Button Button(string className, string text, Action clickEvent) => new Button(clickEvent) { text = text }.WithClass(className);
         public static Button Button(string text, Action clickEvent) => new(clickEvent) { text = text };
+        public static Button Button(string className, VisualElement el, Action clickEvent) {
+            var btn = new Button(clickEvent).WithClass(className);
+            btn.Add(el);
+            return btn;
+        }
+
         public static Label Label(string className, string text) => new Label(text).WithClass(className);
         public static Label Label(string text) => new Label(text);
         public static Label Title(string text) => new Label(text).WithClass("title");
-
     }
 
     /// <summary>
@@ -45,15 +51,7 @@ namespace GDS.Core {
             return element.WithClass(className);
         }
 
-        public static T WithEvents<T>(
-            this T element,
-            EventCallback<AttachToPanelEvent> onAttachCallback,
-            EventCallback<AttachToPanelEvent> onDetachCallback
-        ) where T : VisualElement {
-            element.RegisterCallback(onAttachCallback);
-            element.RegisterCallback(onDetachCallback);
-            return element;
-        }
+
 
         /// <summary>
         /// Adds a class or a list of classes (if separated by ' ') to the element
@@ -82,33 +80,38 @@ namespace GDS.Core {
             element.RemoveFromClassList(className);
             return element;
         }
+
+        public static T ToggleClass<T>(this T element, string className, bool enabled) where T : VisualElement {
+            return enabled ? element.WithClass(className) : element.WithoutClass(className);
+        }
+
         /// <summary>
         /// Hides an element by appending a 'display-none' class. Requires said class be present in the stylesheet
         /// </summary>
-        public static VisualElement Hide(this VisualElement element) => element.WithClass("display-none");
+        public static T Hide<T>(this T element) where T : VisualElement => element.WithClass("display-none");
 
         /// <summary>
         /// Shows an element by removing the 'display-none' class.
         /// </summary>
-        public static VisualElement Show(this VisualElement element) => element.WithoutClass("display-none");
-        /// <summary>
-        /// Toggles element visibility
-        /// </summary>
-        public static VisualElement SetVisible(this VisualElement element, bool visible) => visible ? element.Show() : element.Hide();
+        public static T Show<T>(this T element) where T : VisualElement => element.WithoutClass("display-none");
+
+        public static T SetVisible<T>(this T element, bool visible) where T : VisualElement => visible ? element.Show() : element.Hide();
+
+        public static T Toggle<T>(this T element) where T : VisualElement => element.ClassListContains("display-none") ? element.Show() : element.Hide();
 
 
-        public static VisualElement WithoutPointerEvents(this VisualElement element) {
+        public static T IgnorePick<T>(this T element) where T : VisualElement {
             element.pickingMode = PickingMode.Ignore;
             return element;
         }
 
-        public static VisualElement WithoutPointerEventsInChildren(this VisualElement element) {
-            foreach (var child in element.Children()) child.WithoutPointerEvents();
+        public static T IgnorePickChildren<T>(this T element) where T : VisualElement {
+            foreach (var child in element.Children()) child.IgnorePick();
             return element;
         }
 
-        public static VisualElement WithoutPointerEventsInAll(this VisualElement element) {
-            return element.WithoutPointerEvents().WithoutPointerEventsInChildren();
+        public static T IgnorePickAll<T>(this T element) where T : VisualElement {
+            return element.IgnorePick().IgnorePickChildren();
         }
 
         public static VisualElement SetSize(this VisualElement element, Size size, int scale = 1) {
@@ -127,32 +130,24 @@ namespace GDS.Core {
             return element;
         }
 
-        // Q: Why is there a need to subscribe to attached to panel event anyway?
-        // A: If the effect runs before component is attached there will be null referencing
-        // TODO: Comment the shit out of this mind bending function
-        public static TElement WithEffect<TElement, TParam1>(
-            this TElement element,
-            Observable<TParam1> obs,
-            Func<TElement, Action<TParam1>> callback
-        ) where TElement : VisualElement {
-            Debug.Log($"attaching effects {element.name}");
-            callback(element)(obs.Value);
-            return element.WithEvents((_) => obs.OnChange += callback(element), (_) => obs.OnChange -= callback(element));
+        // TODO: Find a way to include the context (TElement) in the callback (perhaps create a wrapper?). This will simplify usage by not needing to close over TElement instance
+        /// <summary>
+        /// Adds a callback to Observable OnChange event and calls it once (like an Init).
+        /// Subs/unsubs automatically on attach/detach.
+        /// </summary>
+        public static TElement Observe<TElement, T>(this TElement element, Observable<T> observable, Action<T> callback) where TElement : VisualElement {
+            callback.Invoke(observable.Value);
+            element.RegisterCallback<AttachToPanelEvent>(e => observable.OnChange += callback);
+            element.RegisterCallback<DetachFromPanelEvent>(e => observable.OnChange -= callback);
+            return element;
         }
 
-        // public static TElement WithEffect<TElement, TParam1>(
-        //     this TElement element,
-        //     Observable<TParam1> obs,
-        //     Func<TElement, Action<TParam1>> callback
-        // ) where TElement : VisualElement {
-        //     callback(element)(obs.Value);
-        //     return element.WithEvents((_) => obs.OnChange += callback(element), (_) => obs.OnChange -= callback(element));
-        // }
-
-
-
-
-
+        public static T TriggerClassAnimation<T>(this T element, string className, int delay = 100) where T : VisualElement {
+            element.WithClass(className)
+                .schedule.Execute(() => element.WithoutClass(className))
+                .ExecuteLater(delay);
+            return element;
+        }
 
     }
 

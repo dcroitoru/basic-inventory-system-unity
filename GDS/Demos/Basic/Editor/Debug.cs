@@ -1,13 +1,9 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UIElements;
 using GDS.Core;
 using static GDS.Core.Dom;
-using GDS.Core.Views;
-using System.Linq;
-using UnityEngine.UIElements;
-using GDS.Sample;
-using System.Collections.Generic;
-using System;
+using static GDS.Core.DebugUtil;
 
 namespace GDS.Basic {
 
@@ -20,83 +16,28 @@ namespace GDS.Basic {
 
         public void CreateGUI() {
             var root = rootVisualElement;
-            root.styleSheets.Add(Resources.Load<StyleSheet>("Styles/BasicInventory"));
-
+            root.styleSheets.Add(Resources.Load<StyleSheet>("Basic/BasicTheme"));
             root.Add("debug-window row",
-                Dom.Div("gap-v-20",
-                    CreateDragItemDebug(),
-                    new EquipmentDebug(Store.Instance.Equipment),
-                    new InventoryDebug(Store.Instance.Inventory)
-                ),
-                Dom.Div("gap-v-20",
-                    new InventoryDebug(Store.Instance.Ground)
+                Div("gap-v-20",
+                    DraggedItemDebug(Store.Instance.DraggedItem, CustomItemText),
+                    SetBagDebug(Store.Instance.Equipment, CustomSetSlotText),
+                    ListBagDebug(Store.Instance.Main, CustomSlotText),
+                    ListBagDebug(Store.Instance.Hotbar, CustomSlotText),
+                    ListBagDebug(Store.Instance.Chest, CustomSlotText)
                 )
             );
         }
 
-        VisualElement CreateDragItemDebug() {
-            var el = Dom.Div();
+        string CustomItemText(Item item) => $"{item.Name()} ({item.ItemData.Quant}) [id: {item.Id}, {item.Rarity()}]";
+        string CustomSlotText(ListSlot slot) => $"{slot.Index}: {CustomItemText(slot.Item)}";
+        string CustomSetSlotText(SetSlot slot) => $"{slot.Key}: {CustomItemText(slot.Item)}";
 
-            Action<Item> render = (Item item) => {
-                Func<string, string> fn = item switch {
-                    NoItem => ColorUtil.Gray,
-                    _ => (string x) => x
-                };
-                el.Clear();
-                el.Div(
-                    Dom.Title("Dragged item"),
-                    Dom.Label(fn($"{item.Name()} [{item.ItemData.Quant}]"))
-                );
-            };
 
-            render(Store.Instance.DraggedItem.Value);
 
-            Store.Instance.DraggedItem.OnChange += render;
 
-            return el;
-        }
 
     }
 
-    public class EquipmentDebug : SmartComponent<SetBag> {
-        public EquipmentDebug(SetBag e) : base(e) { }
 
-        string CreateText(SetSlot slot) {
-            var str = $"{slot.Key}: {slot.Item.Name()} ({slot.Item.Rarity()})";
-            return str;
-        }
-
-        public override void Render(SetBag data) {
-            Clear();
-            this.Div(
-                Dom.Label("title", data.Id),
-                Div(data.Slots.Values.Select(CreateText).Select(str => Label(str)).ToArray())
-            );
-        }
-    }
-
-    public class InventoryDebug : SmartComponent<ListBag> {
-        public InventoryDebug(ListBag e) : base(e) { }
-
-        string CreateText(ListSlot slot) {
-            var str = $"{slot.Index}: {slot.Item.ItemBase.Name} [{slot.Item.ItemData.Quant}] [id:{slot.Item.Id}] ({slot.Item.Rarity()})";
-            str = slot.Item switch {
-                NoItem => str.Gray(),
-                _ => str
-            };
-            return str;
-        }
-
-        public override void Render(ListBag data) {
-            Clear();
-            this.Div(
-                Dom.Label("title", data.Id),
-                Div(data.Slots
-                        .Select((slot) => CreateText(slot))
-                        .Select(str => Label(str))
-                        .ToArray())
-            );
-        }
-    }
 
 }

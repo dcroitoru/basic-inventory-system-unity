@@ -1,0 +1,12 @@
+
+@import url("/Assets/InventorySystem/GDS/Demos/UnityDefaultRuntimeTheme.tss");
+@import url("/Assets/InventorySystem/GDS/Core/Resources/Shared/Styles/DefaultUnityControls.uss");
+@import url("BasicStyles.uss");
+@import url("BasicTooltip.uss");
+@import url("/Assets/InventorySystem/GDS/Core/Resources/Shared/Styles/Utility.uss");
+
+
+
+
+/* Note: We put `Utility` last so that its layout styles don't get overridden, */
+/* in particular, margins, padding and gaps */

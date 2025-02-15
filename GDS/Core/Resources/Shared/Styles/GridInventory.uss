@@ -1,0 +1,165 @@
+@import "Base.uss";
+:root {
+  --size: 64px;
+}
+
+.root-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  align-items: center;
+  justify-content: center;
+  /* flex-direction: row; */
+}
+
+.debug-label {
+  /* display: none; */
+}
+
+.inventory-window {
+  padding: 48px 64px;
+  margin: 50px;
+  background-image: resource("Shared/Images/backgrounds/bg-window");
+  -unity-slice-scale: 0.1px;
+  /* background-color: #181818;
+  align-self: flex-end;
+  padding: 20px;
+  border-width: 20px;
+  border-color: #151814;
+  margin: 40px; */
+}
+
+.window-title {
+  color: #c3ae70;
+  -unity-font-style: bold;
+  font-size: 20px;
+  letter-spacing: 14px;
+  align-self: center;
+}
+
+.slot {
+  width: 64px;
+  height: 64px;
+  background-image: resource("Shared/Images/backgrounds/bg-slot");
+  /* margin: 0 1px 1px 0; */
+  padding: 4px;
+}
+
+.slot:hover {
+  /* border-color: #b8abf5; */
+}
+
+.valid-drop-target:hover {
+  border-width: 4px;
+  border-color: #3add79;
+  background-color: rgba(200, 255, 200, 0.25);
+}
+.invalid-drop-target:hover {
+  border-width: 4px;
+  border-color: #660000;
+  background-color: rgba(247, 57, 57, 0.37);
+}
+
+.slot-equipment {
+  padding: 12px;
+}
+
+.white {
+  color: white;
+}
+
+.grid-item {
+  position: absolute;
+  min-width: var(--size);
+  min-height: var(--size);
+  padding: 0;
+  /* border-width: 1px; */
+  /* border-color: blue; */
+  background-color: rgba(34, 61, 134, 0.253);
+  /* background-size: contain; */
+}
+
+.item-image {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+}
+
+.item:hover {
+  background-color: rgba(128, 255, 128, 0.15);
+}
+.placement-visual {
+  background-color: rgba(128, 255, 128, 0.15);
+  width: 128px;
+  height: 128px;
+  position: absolute;
+}
+
+.illegal-action {
+  background-color: rgba(255, 128, 128, 0.25);
+}
+
+.legal-action {
+  background-color: rgba(128, 255, 128, 0.15);
+}
+
+.equipment {
+  margin: 10px 0;
+}
+
+.equipment #slotContainer {
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.equipment #slotContainer VisualElement {
+  align-self: flex-end;
+}
+
+.equipment .slot {
+  /* margin-top: 10px; */
+}
+
+.inventory {
+  margin: 10px 0;
+}
+
+.slot-weapon {
+  /* background-image: resource("grid-inventory/eq-weapon"); */
+  width: 148px;
+  height: 276px;
+}
+
+.slot-helmet {
+  /* background-image: resource("grid-inventory/eq-helmet"); */
+  width: 148px;
+  height: 148px;
+}
+
+.slot-gloves {
+  /* background-image: resource("grid-inventory/eq-gloves"); */
+  width: 148px;
+  height: 148px;
+}
+
+.slot-boots {
+  /* background-image: resource("grid-inventory/eq-boots"); */
+  width: 148px;
+  height: 148px;
+}
+.slot-ring {
+  /* background-image: resource("grid-inventory/eq-ring"); */
+  width: 82px;
+  height: 82px;
+}
+.slot-body-armor {
+  /* background-image: resource("grid-inventory/eq-body-armor"); */
+  width: 148px;
+  height: 214px;
+}
+
+.gap-v-10 {
+  margin-bottom: 10px;
+}

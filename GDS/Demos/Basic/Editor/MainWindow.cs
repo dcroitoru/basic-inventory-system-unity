@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using GDS.Core;
+using UnityEngine.UIElements;
 
 namespace GDS.Basic {
 
@@ -14,6 +15,7 @@ namespace GDS.Basic {
         public void CreateGUI() {
             var root = rootVisualElement;
             root.Div(new RootLayer());
+            root.styleSheets.Add(Resources.Load<StyleSheet>("Basic/BasicTheme"));
         }
     }
 }

@@ -1,5 +1,5 @@
-VisualElement {
-  flex-shrink: 0;
+:root {
+  --bg-slice-size: 45;
 }
 
 .root-layer {
@@ -24,14 +24,16 @@ VisualElement {
   padding: 10px 16px;
 }
 
-.inventory {
+.list-bag {
   padding: 64px;
-  margin: 50px;
-  background-image: resource("Shared/Icons/inventory-bg");
-  -unity-slice-scale: 0.1px;
+  background-image: resource("Shared/Images/backgrounds/bg-window");
+  -unity-slice-top: var(--bg-slice-size);
+  -unity-slice-right: var(--bg-slice-size);
+  -unity-slice-bottom: var(--bg-slice-size);
+  -unity-slice-left: var(--bg-slice-size);
 }
 
-.inventory .slot-container {
+.list-bag .slot-container {
   flex-direction: row;
   flex-wrap: wrap;
   max-width: 1000px;
@@ -41,7 +43,7 @@ VisualElement {
 .slot {
   width: 64px;
   height: 64px;
-  background-image: resource("Shared/Icons/slot");
+  background-image: resource("Shared/Images/backgrounds/bg-slot");
   margin: 0 1px 1px 0;
   border-width: 1px;
   border-color: #666;

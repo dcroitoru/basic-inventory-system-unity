@@ -1,0 +1,309 @@
+:root {
+  --image-bg-window: resource("Shared/Images/backgrounds/bg-window");
+  --image-bg-slot: resource("Shared/Images/backgrounds/bg-slot");
+  --image-eq-slot-helmet: resource("Shared/Images/Equipment/64/helmet");
+  --image-eq-slot-weapon: resource("Shared/Images/Equipment/64/weapon");
+  --image-eq-slot-body-armor: resource("Shared/Images/Equipment/64/body-armor");
+  --image-eq-slot-boots: resource("Shared/Images/Equipment/64/boots");
+  --image-eq-slot-gloves: resource("Shared/Images/Equipment/64/gloves");
+  --image-item-bg-no-rarity: resource("Shared/Images/backgrounds/grunge-gray-64-64");
+  --image-item-bg-magic: resource("Shared/Images/backgrounds/grunge-blue-64-64");
+  --image-item-bg-rare: resource("Shared/Images/backgrounds/grunge-yellow-64-64");
+  --image-item-bg-unique: resource("Shared/Images/backgrounds/grunge-brown-64-64");
+  --image-icon-clear: resource("Shared/Images/ui/icon_clear");
+  --image-icon-trash-can: resource("Shared/Images/ui/icon-trash-can");
+
+  --bg-slice-size: 45;
+  --cell-size: 64px;
+
+  --col-slot-hover: #b8abf5;
+}
+
+.root-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.title {
+  color: #aaa;
+  font-size: 16px;
+  margin: 4px 0;
+}
+
+.debug-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 10px;
+  background-color: #353131;
+  opacity: 0.5;
+  display: none;
+}
+
+.debug-window {
+  padding: 10px 16px;
+}
+
+.ghost-item {
+  position: absolute;
+  translate: -50% -50%;
+  border-width: 1px;
+  border-color: #555;
+}
+
+.window-container {
+  padding-top: 5%;
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: 0;
+  flex-direction: row;
+}
+
+.window {
+  background-image: var(--image-bg-window);
+  -unity-slice-top: var(--bg-slice-size);
+  -unity-slice-right: var(--bg-slice-size);
+  -unity-slice-bottom: var(--bg-slice-size);
+  -unity-slice-left: var(--bg-slice-size);
+
+  padding: 48px 64px;
+  align-items: flex-start;
+  flex-shrink: 0;
+  max-width: 800px;
+}
+
+.slot-container {
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.window .slot-container {
+  max-width: 660px;
+}
+
+.slot {
+  background-image: var(--image-bg-slot);
+  width: var(--cell-size);
+  height: var(--cell-size);
+  margin: 0 1px 1px 0;
+  border-width: 1px;
+  border-color: #666;
+  overflow: hidden;
+}
+
+.slot:hover {
+  border-width: 1px;
+  border-color: var(--col-slot-hover);
+}
+
+.close-button {
+  background-image: var(--image-icon-clear);
+  background-color: rgba(22, 10, 5, 0.75);
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+}
+
+.close-button:hover {
+  border-color: #888;
+}
+
+.close-button:active {
+  translate: 0 2px;
+}
+
+.helmet.empty {
+  background-image: var(--image-eq-slot-helmet);
+}
+
+.weapon.empty {
+  background-image: var(--image-eq-slot-weapon);
+}
+
+.body-armor.empty {
+  background-image: var(--image-eq-slot-body-armor);
+}
+
+.boots.empty {
+  background-image: var(--image-eq-slot-boots);
+}
+
+.gloves.empty {
+  background-image: var(--image-eq-slot-gloves);
+}
+
+.background {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.background-drop-target {
+  border-width: 2px;
+  border-color: rgba(247, 255, 174, 0.342);
+  transition: all;
+  transition-duration: 0.35s;
+}
+
+.background-drop-target:hover {
+  border-width: 20px;
+  border-color: rgba(247, 255, 174, 0.342);
+}
+
+.buttons-container {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 20px 30px;
+  border-radius: 8px;
+}
+
+.description {
+  font-size: 16px;
+  color: #ddd;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 20px 30px;
+  border-radius: 8px;
+  -unity-paragraph-spacing: 32px;
+  letter-spacing: -4px;
+}
+
+.message-container {
+  position: absolute;
+  bottom: var(--cell-size);
+  left: var(--cell-size);
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 8px;
+}
+
+.message-container .message {
+  font-size: 16px;
+}
+
+.item {
+  min-width: var(--cell-size);
+  min-height: var(--cell-size);
+}
+
+.item-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.item-image {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+}
+
+.item-rarity__no-rarity {
+  background-image: var(--image-item-bg-no-rarity);
+}
+
+.item-rarity__magic {
+  background-image: var(--image-item-bg-magic);
+}
+
+.item-rarity__rare {
+  background-image: var(--image-item-bg-rare);
+}
+
+.item-rarity__unique {
+  background-image: var(--image-item-bg-unique);
+}
+
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.item-quant {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  background-color: rgba(31, 31, 31, 0.75);
+  color: white;
+  padding: 0px 4px;
+}
+
+.legal-action .overlay {
+  background-color: rgba(200, 255, 200, 0.25);
+}
+.illegal-action .overlay {
+  background-color: rgba(247, 57, 57, 0.37);
+}
+
+.drop-buttons {
+  flex-direction: row;
+}
+
+.drop-target {
+  -unity-text-align: middle-center;
+  padding: 20px 40px;
+  font-size: 24px;
+  color: rgb(128, 128, 128);
+  border-color: rgba(230, 230, 230, 0.5);
+  border-width: 1px;
+  transition: all;
+  transition-duration: 0.1s;
+}
+
+.drop-target:hover {
+  border-color: rgba(230, 230, 230, 1);
+  scale: 1.05;
+}
+
+.on-drop-effect {
+  opacity: 0.25;
+  translate: 0 4px;
+}
+
+.tooltip__affix-text {
+  font-size: 14px;
+  color: #888;
+  -unity-text-align: middle-center;
+}
+
+.crafting-bench__result-slot {
+  width: 128px;
+  height: 128px;
+  transition: all;
+}
+
+.crafting-bench__result-slot .item {
+  width: 100%;
+  height: 100%;
+}
+
+.vendor {
+  max-width: 640px;
+}
+
+.chest {
+  align-items: flex-start;
+}
+
+.empty-message {
+  color: #888;
+}
+
+.destroy-item-button {
+  background-image: var(--image-icon-trash-can);
+  background-size: contain;
+  height: 64px;
+  width: 64px;
+}
+
+.help-panel {
+  position: absolute;
+}

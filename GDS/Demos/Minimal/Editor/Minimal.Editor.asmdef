@@ -1,0 +1,19 @@
+{
+    "name": "Minimal.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:c50d7996509871842ba2dc2a442b1438",
+        "GUID:c62381d40559dd64baa33e668cefc56e"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,56 +1,19 @@
-using GDS.Core;
-using UnityEngine;
 using UnityEngine.UIElements;
+using GDS.Core;
+using GDS.Core.Views;
+using static GDS.Core.Dom;
 
 namespace GDS.Basic.Views.Components {
 
-    public class Tooltip : Core.Views.Tooltip {
-        public Tooltip(VisualElement root) : base(root) {
-            this.Add(
-                ItemRarity.WithClass("tooltip__affix-text"),
-                Defense.WithClass("tooltip__affix-text"),
-                Attack.WithClass("tooltip__affix-text"),
-                AttackSpeed.WithClass("tooltip__affix-text"),
-                DPS.WithClass("tooltip__affix-text")
-            );
-        }
-
-        public readonly Label ItemRarity = new();
-        public readonly Label Defense = new();
-        public readonly Label Attack = new();
-        public readonly Label AttackSpeed = new();
-        public readonly Label DPS = new();
+    public class Tooltip : Component<Item> {
+        public Tooltip() { }
 
         public override void Render(Item item) {
-            base.Render(item);
-            Defense.Hide();
-            Attack.Hide();
-            AttackSpeed.Hide();
-            DPS.Hide();
-            ItemRarity.Hide();
+            Clear();
             ClearClassList();
-            this.WithClass("tooltip " + RarityClass(item.Rarity()));
-
-            if (item.Rarity() is not Rarity.NoRarity) {
-                ItemRarity.text = $"[{item.Rarity()}]";
-                ItemRarity.Show();
-            }
-
-            switch (item.ItemBase) {
-                case ArmorItemBase itemBase:
-                    Defense.text = "Defense: " + itemBase.Defense.ToString().Blue();
-                    Defense.Show();
-                    break;
-                case WeaponItemBase itemBase:
-                    Attack.text = "Attack: " + itemBase.Attack.ToString().Green();
-                    AttackSpeed.text = "AttackSpeed: " + itemBase.AttackSpeed.ToString().Green();
-                    DPS.text = "DPS: " + (itemBase.Attack * itemBase.AttackSpeed).ToString().Pink();
-                    Attack.Show();
-                    AttackSpeed.Show();
-                    DPS.Show();
-                    break;
-                default: break;
-            }
+            this.Add("tooltip " + RarityClass(item.Rarity()),
+                CreateTooltip(item)
+            );
         }
 
         string RarityClass(Rarity rarity) => rarity switch {
@@ -59,6 +22,34 @@ namespace GDS.Basic.Views.Components {
             Rarity.Magic => "magic",
             _ => "common"
         };
+
+        VisualElement CreateTooltip(Item item) => item.ItemBase switch {
+            WeaponItemBase b => WeaponTooltip(item.Name(), item.Rarity(), b),
+            ArmorItemBase b => ArmorTooltip(item.Name(), item.Rarity(), b),
+            _ => OtherTooltip(item.Name(), item.Rarity())
+        };
+
+        // weapon tooltip - name, rarity, attack, attack speed, dps
+        VisualElement WeaponTooltip(string name, Rarity rarity, WeaponItemBase itemBase) => Div(
+            Label("tooltip__item-name", name),
+            Label("tooltip__affix-text", $"[{rarity}]").SetVisible(rarity is not Rarity.NoRarity),
+            Label("tooltip__affix-text", "Attack: " + itemBase.Attack.ToString().Green()),
+            Label("tooltip__affix-text", "AttackSpeed: " + itemBase.AttackSpeed.ToString().Green()),
+            Label("tooltip__affix-text", "DPS: " + (itemBase.Attack * itemBase.AttackSpeed).ToString().Pink())
+        );
+
+        // armor tooltip - name, rarity, defense
+        VisualElement ArmorTooltip(string name, Rarity rarity, ArmorItemBase itemBase) => Div(
+            Label("tooltip__item-name", name),
+            Label("tooltip__affix-text", $"[{rarity}]").SetVisible(rarity is not Rarity.NoRarity),
+            Label("tooltip__affix-text", "Defense: " + itemBase.Defense.ToString().Blue())
+        );
+
+        // Other tooltip - name, rarity
+        VisualElement OtherTooltip(string name, Rarity rarity) => Div(
+            Label("tooltip__item-name", name),
+            Label("tooltip__affix-text", $"[{rarity}]").SetVisible(rarity is not Rarity.NoRarity)
+        );
     }
 
 }

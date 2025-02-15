@@ -1,11 +1,9 @@
-using UnityEngine;
-using GDS.Sample;
+
 using GDS.Core;
 using GDS.Core.Events;
 using static GDS.Core.LogUtil;
 using static GDS.Core.InventoryFactory;
 using static GDS.Core.InventoryExtensions;
-using static GDS.Sample.ItemFactory;
 
 namespace GDS.Minimal {
 
@@ -34,48 +32,48 @@ namespace GDS.Minimal {
         // Views and behaviors subscribe to this and react by re-rendering or triggering other flows
         public readonly Observable<Item> DraggedItem = new(Item.NoItem);
 
+
+        ItemBase WarriorHelmet = CreateBase("WarriorHelmet", "Warrior Helmet", "Shared/Images/items/helmet");
+        ItemBase LeatherArmor = CreateBase("LeatherArmor", "Leaher Armor", "Shared/Images/items/armor");
+        ItemBase Apple = CreateBase("Apple", "Apple", "Shared/Images/items/apple", true);
+        ItemBase Wood = CreateBase("Wood", "Wood", "Shared/Images/items/wood", true);
+
         /// <summary>
         /// Resets the Store state
         /// Sets the inventory state by creating items and adding them to the list
         /// </summary>
         void Reset() {
-            Debug.Log($"Reseting ".Yellow() + "[Basic Store]".Gray());
-            MainInventory.SetState(
-                Create(BaseId.WarriorHelmet, Rarity.Unique),
-                Create(BaseId.LeatherArmor, Rarity.Magic),
-                Create(BaseId.SteelBoots, Rarity.Rare),
-                Create(BaseId.ShortSword, Rarity.Common),
-                Create(BaseId.Apple, Rarity.Rare, 10),
-                Create(BaseId.Wood, Rarity.NoRarity, 199)
+            // Debug.Log($"Reseting ".Yellow() + "[Minimal Store]".Gray());
+
+            MainInventory.Clear();
+            MainInventory.AddItems(
+                Create(WarriorHelmet),
+                Create(LeatherArmor),
+                Create(Apple),
+                Create(Apple, 5),
+                Create(Wood, 50),
+                Create(Wood, 100)
             );
         }
 
         /// <summary>
         /// PickItem event handler
-        /// If picking is successful, sets the new state of Dragged Item and notifies the 
-        /// inventory from which the item was picked
+        /// If picking is successful, updates the inventory and dragged item
         /// </summary>
         /// <param name="e"></param>
         void OnPickItem(PickItemEvent e) {
             LogEvent(e);
-            var (success, replacedItem) = e.Bag.PickItem(e.Item, e.Slot);
-            if (!success) return;
-            DraggedItem.SetValue(replacedItem);
-            e.Bag.Notify();
+            e.Bag.PickItem(e.Item, e.Slot, DraggedItem);
         }
 
         /// <summary>
         /// PlaceItem event handler
-        /// If placing is successful, sets the new state of the Dragged Item and notifies the
-        /// inventory in which the item was placed
+        /// If placing is successful, updates the inventory and dragged item
         /// </summary>
         /// <param name="e"></param>
         void OnPlaceItem(PlaceItemEvent e) {
             LogEvent(e);
-            var (success, replacedItem) = e.Bag.PlaceItem(e.Item, e.Slot);
-            if (!success) return;
-            DraggedItem.SetValue(replacedItem);
-            e.Bag.Notify();
+            e.Bag.PlaceItem(e.Item, e.Slot, DraggedItem);
         }
     }
 }

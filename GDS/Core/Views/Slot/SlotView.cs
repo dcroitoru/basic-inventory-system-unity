@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 
@@ -24,18 +25,17 @@ namespace GDS.Core.Views {
 
         public SlotView(Slot slot, Bag bag) : base(slot, bag) {
             this.Add("slot",
-                debugLabel.WithClass("debug-label").Hide(),
+                debugLabel.WithClass("debug-label"),
                 overlay.WithClass("cover overlay")
-            ).WithoutPointerEventsInChildren();
+            ).IgnorePickChildren();
         }
 
         Label debugLabel = new();
         VisualElement overlay = new();
         T itemView = Activator.CreateInstance<T>();
 
-
         override public void Render(Slot slot) {
-
+            // debugLabel.text = slot is SetSlot s ? $"[{s.Key}]\n[{s.Item.ItemBase.Id}]" : $"[{slot.Item.Name()}]";
             debugLabel.text = $"[{slot.Item.Name()}]";
             if (slot.IsEmpty()) {
                 if (Children().Contains(itemView)) Remove(itemView);
@@ -45,7 +45,9 @@ namespace GDS.Core.Views {
 
             RemoveFromClassList("empty");
             itemView.Data = slot.Item;
-            Insert(0, itemView.WithoutPointerEvents());
+
+            // TODO: rather than adding and removing item, why not use a NoItem renderer (and hide it there)???
+            Insert(0, itemView.IgnorePick());
         }
     }
 }
