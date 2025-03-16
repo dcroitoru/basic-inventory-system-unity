@@ -11,7 +11,7 @@ namespace GDS.Basic.Views {
                 bg.WithClass("item-background"),
                 image.WithClass("item-image"),
                 quant.WithClass("item-quant"),
-                debug.WithClass("debug-label").Hide()
+                debug.WithClass("debug-label")
             ).IgnorePickChildren();
         }
 
@@ -21,7 +21,7 @@ namespace GDS.Basic.Views {
         Label debug = new();
 
         override public void Render(Item item) {
-            debug.text = $"[{item.Name()}]\n[{item.Rarity()}]\n[Stack: {item.ItemBase.Stackable}]";
+            debug.text = $"[{item.Name()}]\n[{item.Rarity()}]";
             var rarityClassname = RarityClassName(item.Rarity());
             bg.ClearClassList();
             bg.WithClass("item-background " + rarityClassname);

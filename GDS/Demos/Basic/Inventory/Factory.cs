@@ -10,9 +10,14 @@ namespace GDS.Basic {
 
         public static CraftingBench CreateCraftingBench(string id, int size) {
             var slots = Enumerable.Range(0, size).Select(InventoryFactory.CreateListSlot).ToList();
-            var bag = new CraftingBench(id, size, new(slots), new(new(Item.NoItem)));
+            var outcome = new CraftingOutcomeSlot(Item.NoItem) { Accepts = Core.Filters.Nothing };
+            var bag = new CraftingBench(id, size, new(slots), new(outcome));
             return bag;
         }
+
+        public static Chest CreateChest(string id, int size) => CreateListBag<Chest>(id, size) with { Accepts = Core.Filters.Nothing };
+        public static Stash CreateStash(string id, int size) => CreateListBag<Stash>(id, size);
+        public static Vendor CreateShop(string id, int size) => CreateListBag<Vendor>(id, size);
 
         public static SetSlot[] CreateEquipmentSlots() => new SetSlot[] {
             CreateSetSlot(SlotType.Helmet.ToString(), Filters.Helmet),

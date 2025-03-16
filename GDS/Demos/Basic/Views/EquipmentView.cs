@@ -10,7 +10,7 @@ namespace GDS.Basic {
             var boots = CreateSlotView(SlotType.Boots, equipment);
             var bodyArmor = CreateSlotView(SlotType.BodyArmor, equipment);
 
-            this.Div("equipment slot-container",
+            this.Add("equipment slot-container",
                 helmet.WithClass("equipment-slot helmet"),
                 bodyArmor.WithClass("equipment-slot body-armor"),
                 gloves.WithClass("equipment-slot gloves"),

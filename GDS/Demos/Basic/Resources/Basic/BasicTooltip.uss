@@ -6,7 +6,7 @@
   min-width: 10px;
   background-color: #180e0a;
   border-color: #af5f1c;
-  translate: -50% -100%;
+  /* translate: -50% -100%; */
 }
 
 .tooltip__item-name {
@@ -14,25 +14,47 @@
   font-size: 20px;
 }
 
-.unique {
+.tooltip__item-cost {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top-width: 1px;
+  border-color: #888;
+  font-size: 14px;
+  color: #888;
+  -unity-text-align: middle-center;
+}
+
+.tooltip__affix-text {
+  font-size: 14px;
+  color: #888;
+  -unity-text-align: middle-center;
+}
+
+.Unique .tooltip__item-cost,
+.Unique {
   /* color: #af5f1c; */
   background-color: #180e0a;
   border-color: #af5f1c;
 }
 
-.rare {
+.Rare .tooltip__item-cost,
+.Rare {
   /* color: #fefe76; */
   background-color: #442e19;
   border-color: #ac8222;
 }
 
-.magic {
+.Magic .tooltip__item-cost,
+.Magic {
   /* color: #8787fe; */
   background-color: #182224;
   border-color: #424a67;
 }
 
-.common {
+.Common .tooltip__item-cost,
+.NoRarity .tooltip__item-cost,
+.NoRarity,
+.Common {
   /* color: #c8c8c8; */
   background-color: #2e2e2e;
   border-color: #908380;

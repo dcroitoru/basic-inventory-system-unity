@@ -6,16 +6,20 @@ using UnityEngine.UIElements;
 
 namespace GDS.Core.Views {
 
-    public class BaseSlotView : Component<Slot> {
-        public BaseSlotView(Slot slot, Bag bag) {
-            Data = slot;
-            Bag = bag;
-        }
-        public Bag Bag { get; private set; } = Bag.NoBag;
+    public interface ISlotView {
+        public Slot Data { get; }
+        public Bag Bag { get; }
+        public Rect Bounds { get; }
+        public Rect GetBounds();
     }
 
-    public class SlotView : SlotView<ItemView> {
-        public SlotView(Slot slot, Bag bag) : base(slot, bag) { }
+    public class BaseSlotView : Component<Slot>, ISlotView {
+        public BaseSlotView(Slot slot, Bag bag) { Data = slot; Bag = bag; Bounds = worldBound; }
+        public Bag Bag { get; private set; }
+        public Rect Bounds { get; private set; }
+        public Rect GetBounds() {
+            return new Rect();
+        }
     }
 
     /// <summary>
@@ -25,29 +29,20 @@ namespace GDS.Core.Views {
 
         public SlotView(Slot slot, Bag bag) : base(slot, bag) {
             this.Add("slot",
-                debugLabel.WithClass("debug-label"),
+                debug.WithClass("debug-label"),
+                itemView,
                 overlay.WithClass("cover overlay")
             ).IgnorePickChildren();
         }
 
-        Label debugLabel = new();
+        Label debug = new();
         VisualElement overlay = new();
         T itemView = Activator.CreateInstance<T>();
 
         override public void Render(Slot slot) {
-            // debugLabel.text = slot is SetSlot s ? $"[{s.Key}]\n[{s.Item.ItemBase.Id}]" : $"[{slot.Item.Name()}]";
-            debugLabel.text = $"[{slot.Item.Name()}]";
-            if (slot.IsEmpty()) {
-                if (Children().Contains(itemView)) Remove(itemView);
-                AddToClassList("empty");
-                return;
-            }
-
-            RemoveFromClassList("empty");
+            debug.text = $"[{slot.Item.Name()}]";
             itemView.Data = slot.Item;
-
-            // TODO: rather than adding and removing item, why not use a NoItem renderer (and hide it there)???
-            Insert(0, itemView.IgnorePick());
+            EnableInClassList("empty", slot.IsEmpty());
         }
     }
 }

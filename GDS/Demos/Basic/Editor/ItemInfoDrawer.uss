@@ -1,0 +1,12 @@
+:root {
+  padding: 8px;
+}
+.row {
+  flex-direction: row;
+}
+.flex-grow-1 {
+  flex-grow: 1;
+}
+.my-item {
+  min-width: 50px;
+}

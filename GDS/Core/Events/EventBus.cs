@@ -18,13 +18,13 @@ namespace GDS.Core.Events {
         }
 
         public void Unsubscribe<T>(Action<CustomEvent> eventHandler) where T : CustomEvent {
-            var type = typeof(T);
-            if (subscribersByType.TryGetValue(type, out var subscribers)) subscribers.Remove(eventHandler);
+            if (subscribersByType.TryGetValue(typeof(T), out var subscribers)) subscribers.Remove(eventHandler);
         }
 
+        // A `NoEvent` will never get published
         public void Publish(CustomEvent CustomEvent) {
-            Type t = CustomEvent.GetType();
-            if (subscribersByType.TryGetValue(t, out var subscribers)) subscribers.ForEach(s => s.Invoke(CustomEvent));
+            if (CustomEvent is NoEvent) return;
+            if (subscribersByType.TryGetValue(CustomEvent.GetType(), out var subscribers)) subscribers.ForEach(s => s.Invoke(CustomEvent));
         }
 
 

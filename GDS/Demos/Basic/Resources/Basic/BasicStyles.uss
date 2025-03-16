@@ -6,17 +6,25 @@
   --image-eq-slot-body-armor: resource("Shared/Images/Equipment/64/body-armor");
   --image-eq-slot-boots: resource("Shared/Images/Equipment/64/boots");
   --image-eq-slot-gloves: resource("Shared/Images/Equipment/64/gloves");
+
   --image-item-bg-no-rarity: resource("Shared/Images/backgrounds/grunge-gray-64-64");
   --image-item-bg-magic: resource("Shared/Images/backgrounds/grunge-blue-64-64");
   --image-item-bg-rare: resource("Shared/Images/backgrounds/grunge-yellow-64-64");
   --image-item-bg-unique: resource("Shared/Images/backgrounds/grunge-brown-64-64");
+
   --image-icon-clear: resource("Shared/Images/ui/icon_clear");
   --image-icon-trash-can: resource("Shared/Images/ui/icon-trash-can");
+  --image-icon-gold: resource("Shared/Images/ui/icon_coins");
 
   --bg-slice-size: 45;
   --cell-size: 64px;
 
   --col-slot-hover: #b8abf5;
+  --col-drop-target-border-active: #fff;
+  --col-drop-target-border: rgba(247, 255, 174, 0.342);
+  --col-illegal-action: rgba(247, 57, 57, 0.25);
+  --col-legal-action: rgba(200, 255, 200, 0.25);
+  --col-backdrop: rgba(0, 0, 0, 0.5);
 }
 
 .root-layer {
@@ -100,6 +108,10 @@
   border-color: var(--col-slot-hover);
 }
 
+.slot.empty .item {
+  display: none;
+}
+
 .close-button {
   background-image: var(--image-icon-clear);
   background-color: rgba(22, 10, 5, 0.75);
@@ -139,25 +151,32 @@
   background-image: var(--image-eq-slot-gloves);
 }
 
-.background {
+.backdrop {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--col-backdrop);
 }
 
-.background-drop-target {
-  border-width: 2px;
-  border-color: rgba(247, 255, 174, 0.342);
+.drop-target {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   transition: all;
-  transition-duration: 0.35s;
+  transition-duration: 0.25s;
 }
 
-.background-drop-target:hover {
+.drop-target-visible {
+  border-width: 2px;
+  border-color: var(--col-drop-target-border);
+}
+
+.drop-target-visible:hover {
   border-width: 20px;
-  border-color: rgba(247, 255, 174, 0.342);
 }
 
 .buttons-container {
@@ -174,6 +193,7 @@
   border-radius: 8px;
   -unity-paragraph-spacing: 32px;
   letter-spacing: -4px;
+  align-self: flex-start;
 }
 
 .message-container {
@@ -237,41 +257,10 @@
 }
 
 .legal-action .overlay {
-  background-color: rgba(200, 255, 200, 0.25);
+  background-color: var(--col-legal-action);
 }
 .illegal-action .overlay {
-  background-color: rgba(247, 57, 57, 0.37);
-}
-
-.drop-buttons {
-  flex-direction: row;
-}
-
-.drop-target {
-  -unity-text-align: middle-center;
-  padding: 20px 40px;
-  font-size: 24px;
-  color: rgb(128, 128, 128);
-  border-color: rgba(230, 230, 230, 0.5);
-  border-width: 1px;
-  transition: all;
-  transition-duration: 0.1s;
-}
-
-.drop-target:hover {
-  border-color: rgba(230, 230, 230, 1);
-  scale: 1.05;
-}
-
-.on-drop-effect {
-  opacity: 0.25;
-  translate: 0 4px;
-}
-
-.tooltip__affix-text {
-  font-size: 14px;
-  color: #888;
-  -unity-text-align: middle-center;
+  background-color: var(--col-illegal-action);
 }
 
 .crafting-bench__result-slot {
@@ -285,16 +274,49 @@
   height: 100%;
 }
 
+.chest,
 .vendor {
-  max-width: 640px;
+  min-width: 640px;
 }
 
-.chest {
+.chest .container {
   align-items: flex-start;
 }
 
 .empty-message {
   color: #888;
+}
+
+.chest .slot.empty,
+.vendor .slot.empty {
+  display: none;
+}
+
+.character-sheet {
+  min-width: 320px;
+}
+
+.character-sheet .title {
+  font-size: 28px;
+  color: #ff9a02;
+}
+
+.action-button {
+  -unity-text-align: middle-center;
+  padding: 20px 40px;
+  font-size: 24px;
+  color: rgb(128, 128, 128);
+  border-color: rgba(230, 230, 230, 0.5);
+  border-width: 1px;
+  padding: 20px 32px;
+  transition: all;
+  transition-duration: 0.1s;
+}
+
+.on-drop-effect {
+  opacity: 0.25;
+  /* translate: 0 16px; */
+  scale: 0.75;
 }
 
 .destroy-item-button {
@@ -306,4 +328,30 @@
 
 .help-panel {
   position: absolute;
+}
+
+.character-line {
+  color: #aaa;
+  font-size: 20px;
+  margin: 4px 0;
+}
+
+.player-gold {
+  position: absolute;
+  right: 64px;
+  top: 48px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.player-gold-label {
+  font-size: 28px;
+  color: #ff9a02;
+}
+
+.player-gold-icon {
+  background-image: var(--image-icon-gold);
+  background-size: contain;
+  height: 24px;
+  width: 24px;
 }

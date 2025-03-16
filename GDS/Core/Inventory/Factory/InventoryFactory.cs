@@ -18,6 +18,7 @@ namespace GDS.Core {
         public static Item Create(ItemBase itemBase, int quant) => new(Id(), itemBase, new(quant));
         public static Item Create(ItemBase itemBase) => new(Id(), itemBase, ItemData.NoItemData);
 
+
         public static Slot CreateSlot(Item item) => new Slot(item);
         public static Slot CreateSlot() => CreateSlot(Item.NoItem);
 

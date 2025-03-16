@@ -17,31 +17,29 @@ namespace GDS.Basic {
                 Store.Bus.Publish(new CollectAllEvent(chest, items));
             };
 
-            var slotContainer = Div("slot-container");
-            var content = Div("chest column",
-                slotContainer,
+
+            var defaultState = Div("container",
+                new ListBagView<SlotView<BasicItemView>>(chest),
                 Button("collect-button", "Collect all", onCollectClick)
             );
-            var emptyLabel = Label("empty-message", "[Empty]");
+            var emptyState = Label("empty-message", "[Empty]");
 
-            this.Add("window",
-                Comps.CloseButton(chest),
+            this.Add("window chest",
+                Components.CloseButton(chest),
                 Title(titleText),
-                emptyLabel,
-                content
+                emptyState,
+                defaultState
             );
 
             this.Observe(chest.Data, (_) => {
                 if (chest.IsEmpty()) {
-                    content.Hide();
-                    emptyLabel.Show();
+                    defaultState.Hide();
+                    emptyState.Show();
                     return;
                 }
 
-                emptyLabel.Hide();
-                content.Show();
-                slotContainer.Clear();
-                slotContainer.Div(chest.Slots.Where(InventoryExtensions.IsNotEmpty).Select(x => new BasicSlotView(x, chest)).ToArray());
+                emptyState.Hide();
+                defaultState.Show();
             });
 
         }

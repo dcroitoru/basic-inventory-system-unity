@@ -1,0 +1,9 @@
+/* Not actual gamma correction */
+/* When in linear color space, adjust the transparency so that the colors are not that intense */
+/* Approx function used is pow(a, 2.2) */
+:root {
+  --col-drop-target-border: rgba(247, 255, 174, 0.094);
+  --col-illegal-action: rgba(247, 57, 57, 0.054);
+  --col-legal-action: rgba(200, 255, 200, 0.054);
+  --col-backdrop: rgba(0, 0, 0, 0.7);
+}

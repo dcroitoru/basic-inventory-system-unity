@@ -1,5 +1,2 @@
-
-@import url("/Assets/InventorySystem/GDS/Demos/UnityDefaultRuntimeTheme.tss");
+@import url("/Assets/InventorySystem/GDS/Core/Resources/Shared/Themes/DefaultRuntimeTheme.tss");
 @import url("MinimalStyles.uss");
-
-

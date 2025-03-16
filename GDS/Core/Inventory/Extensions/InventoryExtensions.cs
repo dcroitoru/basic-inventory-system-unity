@@ -10,34 +10,64 @@ namespace GDS.Core {
     public static class InventoryExtensions {
 
         public static string Name(this Item item) => item.ItemBase.Name;
+        public static int Quant(this Item item) => item.ItemData.Quant;
         public static Item Clone(this Item item) => item with { Id = Id() };
         public static Item Clone(this Item item, ItemData itemData) => item with { Id = Id(), ItemData = itemData };
-        public static T SetQuant<T>(this T item, int quant) where T : Item => item with { ItemData = item.ItemData with { Quant = quant } };
         public static bool CanStack(Item item, Item otherItem) => item.ItemBase.Stackable && item.ItemBase == otherItem.ItemBase;
+        public static T WithQuant<T>(this T item, int quant) where T : Item => item with { ItemData = item.ItemData with { Quant = quant } };
+        public static T IncQuant<T>(this T item) where T : Item => item.WithQuant(item.ItemData.Quant + 1);
+        public static T DecQuant<T>(this T item) where T : Item => item.ItemData.Quant > 0 ? item.WithQuant(item.ItemData.Quant - 1) : item;
 
+        // Can unstack if
+        // • bag and slot accept item
+        // • source is stackable
+        // • both are the same base OR target is NoItem
+        // • source quant is > 1 (the case where quant is 1 is treated by `place`)
+        // • target quant + 1 < max (not aplicable yet, since quant has no max)
+        public static bool CanUnstackTo(this Item source, Bag bag, Slot slot) =>
+            bag.Accepts(source)
+            && slot.Accepts(source)
+            && source.ItemBase.Stackable
+            && (source.ItemBase == slot.Item.ItemBase || slot.IsEmpty())
+            && source.Quant() > 1;
 
-        public static bool IsEmpty(this Slot slot) => slot.Item is NoItem;
+        public static Size Size(this Item item) => item.ItemData switch {
+            _ => item.ItemBase.Size
+        };
 
-        public static bool IsNotEmpty(this Slot slot) => !slot.IsEmpty();
+        public static bool IsEmpty(this Slot slot) => slot.Item == Item.NoItem;
+        public static bool IsNotEmpty(this Slot slot) => slot.Item != Item.NoItem;
 
-        public static bool IsNotEmpty(this Item item) => item is not NoItem;
-        public static bool IsItem(this Item item) => item is not NoItem;
-        public static bool IsNoItem(this Item item) => item is NoItem;
+        public static bool IsItem(this Item item) => item != Item.NoItem;
+        public static bool IsNoItem(this Item item) => item == Item.NoItem;
 
         public static bool IsEmpty(this ListBag bag) => bag.Slots.All(IsEmpty);
+        public static bool IsEmpty(this Bag bag) => bag switch {
+            ListBag b => b.IsEmpty(),
+            _ => false
+        };
         public static bool IsFull(this ListBag bag) => bag.Slots.All(IsNotEmpty);
+
         public static bool IsFull(this Bag bag) => bag switch {
             ListBag b => b.IsFull(),
             _ => false
         };
 
+
+
         public static int ToIndex(this Pos pos, Size size) => pos.Y * size.W + pos.X;
 
-
+        public static bool IsItemInBounds(Size bounds, Size size, Pos pos)
+            => pos.X >= 0
+            && pos.Y >= 0
+            && size.W + pos.X <= bounds.W
+            && size.H + pos.Y <= bounds.H;
 
         public static int GetNextEmptyIndex(this ListBag bag) => bag.Slots.FindIndex((x) => IsEmpty(x));
 
         public static Slot Clear(this Slot slot) => slot with { Item = Item.NoItem };
+
+        public static T Clear<T>(this T slot) where T : Slot => slot with { Item = Item.NoItem };
 
         public static Slot SetItem(this Slot slot, Item item) => slot with { Item = item };
 
@@ -45,12 +75,7 @@ namespace GDS.Core {
 
         public static IEnumerable<ListSlot> NonEmptySlots<T>(this T bag) where T : ListBag => bag.Slots.Where(IsNotEmpty);
 
-        public static IEnumerable<Item> NotEmpty(this IEnumerable<Item> items) => items.Where(IsNotEmpty).ToList();
-
-        public static T AcceptsFn<T>(this T bag, FilterFn accepts) where T : Bag {
-            bag.Accepts = accepts;
-            return bag;
-        }
+        public static IEnumerable<Item> NotEmpty(this IEnumerable<Item> items) => items.Where(IsItem).ToList();
 
 
         /// <summary>
@@ -71,13 +96,18 @@ namespace GDS.Core {
             }
         }
 
-
+        public static bool AddItem(this Bag bag, Item item) {
+            return bag switch {
+                ListBag b => b.AddItem(item),
+                _ => false
+            };
+        }
 
         /// <summary>
         /// Adds an item to a List bag
         /// </summary>
         /// <returns>True if item was added, false otherwise</returns>
-        public static bool AddItem(this ListBag bag, Item item) {
+        static bool AddItem(this ListBag bag, Item item) {
             var index = bag.GetNextEmptyIndex();
             if (index == -1) return false;
             bag.Slots[index] = bag.Slots[index] with { Item = item };
@@ -111,6 +141,8 @@ namespace GDS.Core {
 
 
 
+
+
         /// <summary>
         /// Adds items until the bag is full
         /// </summary>
@@ -136,9 +168,9 @@ namespace GDS.Core {
         /// </summary>
         /// <returns>True and the item if the item was removed from the bag, otherwise false and NoItem </returns>
         public static (bool, Item) PickItem(this Bag bag, Item item, Slot slot) {
-            // Debug.Log($"should pick item from bag {item}");
             if (item == Item.NoItem) return (false, Item.NoItem);
             return (bag, item, slot) switch {
+                (DenseListBag b, _, ListSlot s) => PickItem(b, item, s),
                 (ListBag b, _, ListSlot s) => PickItem(b, item, s),
                 (SetBag b, _, SetSlot s) => PickItem(b, item, s),
                 _ => (false, Item.NoItem)
@@ -148,10 +180,6 @@ namespace GDS.Core {
         /// <summary>
         /// Same as `PickItem` except it also sets dragged item on success
         /// </summary>
-        /// <param name="bag"></param>
-        /// <param name="item"></param>
-        /// <param name="slot"></param>
-        /// <param name="draggedItem"></param>
         /// <returns></returns>
         public static (bool, Item) PickItem(this Bag bag, Item item, Slot slot, Observable<Item> draggedItem) {
             // Debug.Log($"should pick item from bag {item}");
@@ -159,6 +187,14 @@ namespace GDS.Core {
             var (success, replacedItem) = PickItem(bag, item, slot);
             if (success) draggedItem.SetValue(replacedItem);
             return (success, replacedItem);
+        }
+
+        static (bool, Item) PickItem(this DenseListBag bag, Item item, ListSlot slot) {
+            var index = bag.Slots.FindIndex(s => s == slot);
+            bag.Slots.RemoveAt(index);
+            bag.Slots.Add(slot.Clear());
+            bag.Data.Notify();
+            return (true, item);
         }
 
         static (bool, Item) PickItem(this ListBag bag, Item item, ListSlot slot) {
@@ -173,15 +209,47 @@ namespace GDS.Core {
             return (true, item);
         }
 
+
+        public static bool UnstackItem(this Bag bag, Item item, Slot slot, Observable<Item> dragged) {
+            if (!item.ItemBase.Stackable || item.ItemData.Quant <= 1) return false;
+            int half = item.ItemData.Quant / 2;
+            var newDraggedItem = item.Clone(item.ItemData with { Quant = half });
+            var newBagItem = item.WithQuant(item.ItemData.Quant - half);
+            dragged.SetValue(newDraggedItem);
+            bag.SetItem(slot, newBagItem);
+            return true;
+        }
+
+
+        public static bool UnstackDraggedItem(this Bag bag, Slot slot, Observable<Item> dragged) {
+            if (!dragged.Value.CanUnstackTo(bag, slot)) return false;
+            var newDraggedItem = dragged.Value.DecQuant();
+            var newBagItem = slot.IsEmpty() ? dragged.Value.Clone().WithQuant(1) : slot.Item.IncQuant();
+            dragged.SetValue(newDraggedItem);
+            bag.SetItem(slot, newBagItem);
+            return true;
+        }
+
         /// <summary>
         /// Removes an item
         /// </summary>
-        /// <returns>True if item was removed, False otherwise</returns>
+        /// <returns><c>true</c> if item was removed, <c>false</c> otherwise</returns>
         public static bool RemoveItem(this Bag bag, Item item) {
             return bag switch {
+                DenseListBag b => RemoveItem(b, item),
                 ListBag b => RemoveItem(b, item),
                 _ => false
             };
+        }
+
+        static bool RemoveItem(this DenseListBag bag, Item item) {
+            var index = bag.Slots.FindIndex(slot => slot.Item == item);
+            if (index == -1) return false;
+            var slot = bag.Slots.ElementAt(index);
+            bag.Slots.RemoveAt(index);
+            bag.Slots.Add(slot.Clear());
+            bag.Data.Notify();
+            return true;
         }
 
         static bool RemoveItem(this ListBag bag, Item item) {
@@ -193,11 +261,10 @@ namespace GDS.Core {
         }
 
         /// <summary>
-        /// Places an item in a slot belonging to a bag. Will stack items if possible (both items of the same type and stackable).
+        /// Places an item in a slot belonging to a bag. Will stack items if possible (same base and stackable).
         /// </summary>
-        /// <returns>True and the replaced item (item that was in the slot before this, NoItem if slot was empty)
-        /// if placement was successful
-        /// False and NoItem otherwise
+        /// <returns><para><c>(true, Item)</c> if placement was successful, where Item is the replaced item (previous item in the slot or NoItem if empty)</para>
+        /// <para><c>(false, NoItem)</c> otherwise</para>
         /// </returns>
         public static (bool, Item) PlaceItem(this Bag bag, Item item, Slot slot) {
             return (bag, slot) switch {
@@ -240,7 +307,7 @@ namespace GDS.Core {
             var index = slot.Index;
             if (CanStack(item, slot.Item)) {
                 var newQuant = item.ItemData.Quant + slot.Item.ItemData.Quant;
-                bag.Slots[index] = bag.Slots[index] with { Item = bag.Slots[index].Item.SetQuant(newQuant) };
+                bag.Slots[index] = bag.Slots[index] with { Item = bag.Slots[index].Item.WithQuant(newQuant) };
                 bag.Data.Notify();
                 return (true, Item.NoItem);
             }
@@ -250,7 +317,6 @@ namespace GDS.Core {
             return (true, slot.Item);
         }
 
-
         /// <summary>
         /// Moves an item from one bag to another
         /// </summary>
@@ -258,9 +324,14 @@ namespace GDS.Core {
         /// not accept the item)</returns>
         public static bool MoveItem(this Bag fromBag, Bag toBag, Item item) {
             return (fromBag, toBag) switch {
+                (DenseListBag b1, ListBag b2) => MoveItem(b1, b2, item),
                 (ListBag b1, ListBag b2) => MoveItem(b1, b2, item),
                 _ => false
             };
+        }
+
+        static bool MoveItem(this DenseListBag fromBag, ListBag toBag, Item item) {
+            return toBag.Accepts(item) && AddItem(toBag, item) && RemoveItem(fromBag, item);
         }
 
         static bool MoveItem(this ListBag fromBag, ListBag toBag, Item item) {
@@ -276,12 +347,10 @@ namespace GDS.Core {
             if (index < 0 || index >= bag.Slots.Count) return (false, Item.NoItem);
             var slot = bag.Slots[index];
             if (slot.IsEmpty()) return (false, Item.NoItem);
-            var item = slot.Item;
-            var newQuant = slot.Item.ItemData.Quant - 1;
-            var newItem = newQuant == 0 ? Item.NoItem : slot.Item with { ItemData = new(newQuant) };
-            bag.Slots[index] = slot with { Item = newItem };
+            var newItem = slot.Item.DecQuant();
+            bag.Slots[index] = slot with { Item = newItem.Quant() == 0 ? Item.NoItem : newItem };
             bag.Data.Notify();
-            return (true, item);
+            return (true, newItem);
         }
 
         /// <summary>
@@ -301,7 +370,7 @@ namespace GDS.Core {
         public static ListBag SetState(this ListBag bag, params Item[] items) {
             bag.Clear();
             bag.AddItems(items);
-            bag.Data.Notify();
+            // bag.Data.Notify();
             return bag;
         }
 
@@ -311,7 +380,9 @@ namespace GDS.Core {
                 _ => bag
             };
         }
-
     }
-
 }
+
+
+
+

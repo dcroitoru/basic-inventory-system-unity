@@ -7,6 +7,7 @@ namespace GDS.Core {
     public record ItemData(int Quant = 1) { public static ItemData NoItemData = new(); };
     public record Item(int Id, ItemBase ItemBase, ItemData ItemData) { public static readonly NoItem NoItem = new(); };
     public record NoItem() : Item(-1, ItemBase.NoItemBase, ItemData.NoItemData);
+    public record BagItem(Bag Bag, Item Item);
 
     public record Pos(int X, int Y) { public static readonly NoPos NoPos = new(); };
     public record NoPos() : Pos(0, 0);
@@ -26,7 +27,6 @@ namespace GDS.Core {
     /// A slot with an index, used in inventories where slot order matters
     /// </summary>
     public record ListSlot(int Index, Item Item) : Slot(Item);
-
 
     /// <summary>
     /// Base type for all bags (inventories)
@@ -51,4 +51,10 @@ namespace GDS.Core {
     public record ListBag(string Id, int Size, Observable<List<ListSlot>> Data) : Bag(Id) {
         public List<ListSlot> Slots = Data.Value;
     };
+
+    /// <summary>
+    /// Used in inventories where slots are ordered and item size doesn't matter
+    /// </summary>    
+    public record DenseListBag(string Id, int Size, Observable<List<ListSlot>> Data) : ListBag(Id, Size, Data);
+
 }

@@ -5,7 +5,6 @@
     xsi:noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd"
 >
 
-<!-- This is intentionally blank! -->
-<!-- Do not put anything here! -->
+<GDS.Minimal.RootLayer />
     
 </ui:UXML>

@@ -9,7 +9,6 @@ namespace GDS.Core.Views {
     public class ItemView : Component<Item> {
 
         public ItemView() {
-
             this.Add("item",
                 image.WithClass("item-image"),
                 quant.WithClass("item-quant"),

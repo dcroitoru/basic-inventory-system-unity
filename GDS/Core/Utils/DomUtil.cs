@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using GDS.Core.Events;
 using UnityEngine;
 using UnityEngine.UIElements;
 namespace GDS.Core {
@@ -12,6 +12,7 @@ namespace GDS.Core {
         public static VisualElement Div() => new VisualElement();
         public static VisualElement Div(params VisualElement[] children) => Div().Add(children);
         public static VisualElement Div(string className, params VisualElement[] children) => Div().Add(className, children);
+        public static VisualElement Div(string name, string className, params VisualElement[] children) => Div().WithName(name).Add(className, children);
 
         public static Button Button(string className, string text, Action clickEvent) => new Button(clickEvent) { text = text }.WithClass(className);
         public static Button Button(string text, Action clickEvent) => new(clickEvent) { text = text };
@@ -52,6 +53,10 @@ namespace GDS.Core {
         }
 
 
+        public static T WithName<T>(this T element, string name) where T : VisualElement {
+            element.name = name;
+            return element;
+        }
 
         /// <summary>
         /// Adds a class or a list of classes (if separated by ' ') to the element
@@ -120,6 +125,12 @@ namespace GDS.Core {
             return element;
         }
 
+        public static T SetSize<T>(this T element, int sizePx) where T : VisualElement {
+            element.style.width = sizePx;
+            element.style.height = sizePx;
+            return element;
+        }
+
         public static VisualElement Translate(this VisualElement element, Pos pos, int scale = 1) {
             element.style.translate = new Translate(pos.X * scale, pos.Y * scale);
             return element;
@@ -127,6 +138,16 @@ namespace GDS.Core {
 
         public static VisualElement Translate(this VisualElement element, Size pos, int scale = 1) {
             element.style.translate = new Translate(pos.W * scale, pos.H * scale);
+            return element;
+        }
+
+        public static T Rotate<T>(this T element, float angles) where T : VisualElement {
+            element.style.rotate = new StyleRotate(new Rotate(angles));
+            return element;
+        }
+
+        public static T BackgroundImage<T>(this T element, Sprite image) where T : VisualElement {
+            element.style.backgroundImage = new StyleBackground(image);
             return element;
         }
 
@@ -142,9 +163,26 @@ namespace GDS.Core {
             return element;
         }
 
+        public static VisualElement SubscribeTo<T>(this VisualElement element, EventBus bus, Action<CustomEvent> callback) where T : CustomEvent => SubscribeTo<VisualElement, T>(element, bus, callback);
+        public static TElement SubscribeTo<TElement, T>(this TElement element, EventBus bus, Action<CustomEvent> callback) where TElement : VisualElement where T : CustomEvent {
+            element.RegisterCallback<AttachToPanelEvent>(e => bus.Subscribe<T>(callback));
+            element.RegisterCallback<DetachFromPanelEvent>(e => bus.Unsubscribe<T>(callback));
+            return element;
+        }
+
         public static T TriggerClassAnimation<T>(this T element, string className, int delay = 100) where T : VisualElement {
             element.WithClass(className)
                 .schedule.Execute(() => element.WithoutClass(className))
+                .ExecuteLater(delay);
+            return element;
+        }
+
+        public static T TriggerClassAnimation<T>(this T element, string className, int delay, Action callback) where T : VisualElement {
+            element.WithClass(className)
+                .schedule.Execute(() => {
+                    element.WithoutClass(className);
+                    callback();
+                })
                 .ExecuteLater(delay);
             return element;
         }

@@ -17,13 +17,16 @@ namespace GDS.Basic {
         public void CreateGUI() {
             var root = rootVisualElement;
             root.styleSheets.Add(Resources.Load<StyleSheet>("Basic/BasicTheme"));
-            root.Add("debug-window row",
+            root.Add("debug-window",
                 Div("gap-v-20",
                     DraggedItemDebug(Store.Instance.DraggedItem, CustomItemText),
-                    SetBagDebug(Store.Instance.Equipment, CustomSetSlotText),
-                    ListBagDebug(Store.Instance.Main, CustomSlotText),
-                    ListBagDebug(Store.Instance.Hotbar, CustomSlotText),
-                    ListBagDebug(Store.Instance.Chest, CustomSlotText)
+                    new ScrollView().Add(
+                        SetBagDebug(Store.Instance.Equipment, CustomSetSlotText),
+                        ListBagDebug(Store.Instance.Main, CustomSlotText),
+                        ListBagDebug(Store.Instance.Hotbar, CustomSlotText),
+                        ListBagDebug(Store.Instance.Chest, CustomSlotText),
+                        ListBagDebug(Store.Instance.EquipmentShop, CustomSlotText)
+                    )
                 )
             );
         }

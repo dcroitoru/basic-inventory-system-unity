@@ -13,7 +13,7 @@ namespace GDS.Basic {
             var Result = new BasicSlotView(bag.OutcomeSlot.Value, bag);
 
             this.Add("window gap-v-20",
-                Comps.CloseButton(bag),
+                Components.CloseButton(bag),
                 Dom.Title("Crafting bench"),
                 Result.WithClass("crafting-bench__result-slot"),
                 Dom.Div("slot-container", Slots),
@@ -40,7 +40,7 @@ namespace GDS.Basic {
 
         VisualElement Hints() {
             var recipes = Recipes.All.Keys.ToArray();
-            System.Func<Recipe, string> hintStr = (Recipe r) => r.one?.Name + " - " + r.two?.Name + " - " + r.three?.Name;
+            System.Func<Recipe, string> hintStr = (Recipe r) => r.Item1?.Name + " - " + r.Item2?.Name + " - " + r.Item3?.Name;
             var el = Dom.Div(Dom.Label("Try:"));
             el.Add(Dom.Div("hints", recipes.Select(r => Dom.Label(hintStr(r))).ToArray()));
             return el;

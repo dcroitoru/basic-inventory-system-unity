@@ -12,6 +12,19 @@
   display: flex;
 }
 
+.absolute {
+  position: absolute;
+}
+
+.cover,
+.absolute-fill {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
 /* Flex */
 .row {
   flex-direction: row;
@@ -21,10 +34,28 @@
   flex-direction: column;
 }
 
+.stretch {
+  align-self: stretch;
+}
+
 .flex-1 {
   flex-grow: 1;
   flex-shrink: 0;
   flex-basis: 0;
+}
+
+.flex-2 {
+  flex-grow: 2;
+  flex-shrink: 0;
+  flex-basis: 0;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
 }
 
 /* Flex align/justify */
@@ -59,6 +90,10 @@
 
 .m-50 {
   margin: 50px;
+}
+
+.mt-20 {
+  margin-top: 20px;
 }
 
 .mt-50 {
